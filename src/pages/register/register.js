@@ -38,10 +38,11 @@ const Register = () => {
     await makeRequest
       .post("/user/register", data)
       .then((res) => {
-        console.log(res);
-        successMessage(res.data.message);
-        setLoading(false);
-        navigate("/login");
+        setTimeout(() => {
+          successMessage("Register successfully");
+          setLoading(false);
+          navigate("/login");
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -52,6 +53,23 @@ const Register = () => {
 
   return (
     <div class="register">
+      <div className="register-intro-header">
+        <Link to="/" className="link">
+          <img
+            className="register-intro-header-logo"
+            src="https://res.cloudinary.com/djqxdscwh/image/upload/v1699885216/main-logo-white-transparent_o4yzqi.png"
+            alt=""
+          />
+        </Link>
+        <div className="register-intro-header-btn">
+          <Link to="/login" className="link">
+            <button className="register-intro-login">Login</button>
+          </Link>
+          <Link to="/register" className="link">
+            <button className="register-intro-register">Register</button>
+          </Link>
+        </div>
+      </div>
       {loading && <Loading />}
       <form className="register-form" onSubmit={handleRegister}>
         <h3 className="register-title">Register</h3>
@@ -90,7 +108,9 @@ const Register = () => {
 
             <input
               className="register-input"
-              type="text"
+              type="number"
+              max={100}
+              min={18}
               onChange={onChange}
               placeholder="Age"
               name="age"
@@ -178,7 +198,7 @@ const Register = () => {
           Register
         </button>
         <div className="register-footer">
-          <p>Do you have an account?</p>
+          <p>Do you have an account ?</p>
           <Link to="/login" className="link">
             <p className="register-btn-login">Login</p>
           </Link>

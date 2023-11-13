@@ -12,8 +12,10 @@ import { AuthContext } from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 // import NotFound from "./NotFound";
 import Home from "./pages/home/home";
-import Login from "./pages/login/login"
-import Register from "./pages/register/register"
+import Login from "./pages/login/login";
+import Register from "./pages/register/register";
+import Intro from "./pages/intro/Intro";
+import NotFound from "./pages/notFound/NotFound";
 
 // const Home = lazy(() => import("./pages/Home"));
 // const Login = lazy(() => import("./pages/Login"));
@@ -22,25 +24,20 @@ import Register from "./pages/register/register"
 // const PostDetails = lazy(() => import("./pages/PostDetails"));
 // const Chat = lazy(() => import("./pages/Chat"));
 
+const PrivateRoute = ({ element }) => {
+  const { currentUser } = useContext(AuthContext);
+  return currentUser.accessToken ? element : <Navigate to="/" />;
+};
+
 const App = () => {
-  // const { currentUser } = useContext(AuthContext);
-
-  const PrivateRoute = () => {
-    // return currentUser?.accessToken ? <Outlet /> : <Navigate to="/login" />;
-  };
-
   return (
     <BrowserRouter>
       <Routes>
-        {/* <Route element={<PrivateRoute />}> */}
-        <Route path="/" exact element={<Home />} />
-        {/* <Route path="/u/:username" element={<Profile />} />
-            <Route path="/p/:postId" element={<PostDetails />} />
-            <Route path="/chat" element={<Chat />} /> */}
-        {/* </Route> */}
+        <Route path="/" element={<Intro />} />
+        <Route path="/home" element={<PrivateRoute element={<Home />} />} />
         <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          {/* <Route path="/*" element={<NotFound />} />  */}
+        <Route path="/register" element={<Register />} />
+        <Route path="/*" element={<NotFound />} />
       </Routes>
       <ToastContainer />
     </BrowserRouter>

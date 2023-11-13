@@ -26,10 +26,12 @@ const Login = () => {
     await makeRequest
       .post("/user/login", values)
       .then((res) => {
-        setCurrentUser(res.data.data);
-        successMessage(res.data.status);
-        setLoading(false);
-        navigate("/");
+        setTimeout(() => {
+          setCurrentUser(res.data.data);
+          successMessage("Login successful");
+          setLoading(false);
+          navigate("/home");
+        }, 1000);
       })
       .catch((err) => {
         console.log(err);
@@ -40,6 +42,23 @@ const Login = () => {
 
   return (
     <div class="login">
+      <div className="login-intro-header">
+        <Link to="/" className="link">
+          <img
+            className="login-intro-header-logo"
+            src="https://res.cloudinary.com/djqxdscwh/image/upload/v1699885216/main-logo-white-transparent_o4yzqi.png"
+            alt=""
+          />
+        </Link>
+        <div className="login-intro-header-btn">
+          <Link to="/login" className="link">
+            <button className="login-intro-login">Login</button>
+          </Link>
+          <Link to="/register" className="link">
+            <button className="login-intro-register">Register</button>
+          </Link>
+        </div>
+      </div>
       {loading && <Loading />}
       <form className="login-form" onSubmit={handleRegister}>
         <h3 className="login-title">Login</h3>
@@ -70,7 +89,7 @@ const Login = () => {
           Login
         </button>
         <div className="login-footer">
-          <p>Create new an account?</p>
+          <p>Create new an account ?</p>
           <Link to="/register" className="link">
             <p className="login-btn-signup">Register</p>
           </Link>
