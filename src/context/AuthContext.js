@@ -1,4 +1,4 @@
-import { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -29,10 +29,6 @@ export const AuthContextProvider = ({ children }) => {
 
   const errorMessage = (message) => toast.error(message, options);
 
-  // SOCKET CONNECT
-  const socket = useRef(null);
-
-  const [openCreate, setOpenCreate] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -41,11 +37,8 @@ export const AuthContextProvider = ({ children }) => {
         setCurrentUser,
         successMessage,
         errorMessage,
-        socket,
         errorPage,
         setErrorPage,
-        openCreate,
-        setOpenCreate,
       }}
     >
       {children}

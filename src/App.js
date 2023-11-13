@@ -12,6 +12,8 @@ import { AuthContext } from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 // import NotFound from "./NotFound";
 import Home from "./pages/home/home";
+import Login from "./pages/login/login"
+import Register from "./pages/register/register"
 
 // const Home = lazy(() => import("./pages/Home"));
 // const Login = lazy(() => import("./pages/Login"));
@@ -36,9 +38,9 @@ const App = () => {
             <Route path="/p/:postId" element={<PostDetails />} />
             <Route path="/chat" element={<Chat />} /> */}
         {/* </Route> */}
-        {/* <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Register />} />
-          <Route path="/*" element={<NotFound />} /> */}
+        <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          {/* <Route path="/*" element={<NotFound />} />  */}
       </Routes>
       <ToastContainer />
     </BrowserRouter>

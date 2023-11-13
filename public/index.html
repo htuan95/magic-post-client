@@ -9,15 +9,24 @@
       content="Web site created using create-react-app"
     />
     <style>
-      * {
-        scroll-behavior: smooth;
+      *,
+      *:before,
+      *:after {
+        padding: 0;
         margin: 0;
-        padding: 20;
-        font-size: 16px;
         box-sizing: border-box;
       }
+
+      body {
+        background-color: #313136;
+      }
+
+      .link {
+        text-decoration: none;
+        color: unset;
+      }
     </style>
-    <title>Magic Post</title>
+    <title>Magic Post Client</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
