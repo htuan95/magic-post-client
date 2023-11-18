@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import makeRequest from "../../services/makeRequest";
 import Loading from "../../components/loading/loading";
+import { inputLogin } from "../../helpers/inputHelpers";
 
 const Login = () => {
   const { successMessage, errorMessage, setCurrentUser } =
@@ -64,25 +65,18 @@ const Login = () => {
         <h3 className="login-title">Login</h3>
 
         <div className="login-form-group">
-          <input
-            className="login-input"
-            type="text"
-            placeholder="Email"
-            name="email"
-            value={values["email"]}
-            onChange={onChange}
-            required
-          />
-
-          <input
-            className="login-input"
-            type="password"
-            placeholder="Password"
-            name="password"
-            onChange={onChange}
-            value={values["password"]}
-            required
-          />
+          {inputLogin.map((item, index) => (
+            <input
+              key={index}
+              className="login-input"
+              type={item.type}
+              placeholder={item.placeholder}
+              name={item.name}
+              value={values[item.name]}
+              onChange={onChange}
+              required
+            />
+          ))}
         </div>
 
         <button className="login-btn" type="submit">

@@ -17,13 +17,15 @@ const Home = () => {
   //     setIsPage401(true);
   //   }
   // }, [errorPage]);
+  const [selectedMenu, setSelectedMenu] = useState("Exchange");
+  const onChangeMenu = (selectedMenu) => {
+    setSelectedMenu(selectedMenu);
+  };
 
   return (
     <div className={isPage401 ? "home unauthorized" : "home"}>
-      {/* {showTopSub && <TopSub />}
-      <Main /> */}
-      <Sidebar />
-      <Main />
+      <Sidebar selectedMenu={selectedMenu} onChangeMenu={onChangeMenu} />
+      <Main selectedMenu={selectedMenu} />
       {/* {isPage401 && (
         <UnAuthorized
           setIsPage401={setIsPage401}

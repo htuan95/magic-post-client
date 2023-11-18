@@ -6,16 +6,16 @@ import { handleOpenOptions } from "../../helpers";
 import Loading from "../loading/loading";
 import { AuthContext } from "../../context/AuthContext";
 
-const Sidebar = () => {
-  const [selectedMenu, setSelectedMenu] = useState("Exchange");
+const Sidebar = ({ selectedMenu, onChangeMenu }) => {
+  // const [selectedMenu, setSelectedMenu] = useState("Exchange");
   const navigate = useNavigate();
   const [openPopup, setOpenPopup] = useState(false);
   const [loading, setLoading] = useState(false);
   const { successMessage } = useContext(AuthContext);
 
-  const onChangeMenu = (selectedMenu) => {
-    setSelectedMenu(selectedMenu);
-  };
+  // const onChangeMenu = (selectedMenu) => {
+  //   setSelectedMenu(selectedMenu);
+  // };
 
   const handleLogout = () => {
     setLoading(true);
@@ -55,30 +55,6 @@ const Sidebar = () => {
           >
             Gathering
           </li>
-          {/* <li
-            onClick={() => onChangeMenu("Item")}
-            className={
-              selectedMenu === "Item" ? "sidebar-item active" : "sidebar-item"
-            }
-          >
-            Item 4
-          </li>
-          <li
-            onClick={onChangeMenu}
-            className={
-              selectedMenu === "Item 4" ? "sidebar-item active" : "sidebar-item"
-            }
-          >
-            Item 5
-          </li>
-          <li
-            onClick={onChangeMenu}
-            className={
-              selectedMenu === "Item 5" ? "sidebar-item active" : "sidebar-item"
-            }
-          >
-            Item
-          </li> */}
         </ul>
       </div>
 

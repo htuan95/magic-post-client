@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import makeRequest from "../../services/makeRequest";
 import Loading from "../../components/loading/loading";
+import { inputRegister } from "../../helpers/inputHelpers";
 
 const Register = () => {
   const { successMessage, errorMessage } = useContext(AuthContext);
@@ -18,7 +19,7 @@ const Register = () => {
     phoneNumber: "",
     password: "",
     // confirmPassword: "",
-    role: "",
+    role: "USER_NORMAL",
   });
 
   const onChange = (e) => {
@@ -76,90 +77,40 @@ const Register = () => {
 
         <div className="register-form-group">
           <div className="register-group">
-            <input
-              className="register-input"
-              type="email"
-              placeholder="Email"
-              name="email"
-              value={values["email"]}
-              onChange={onChange}
-              required
-            />
-
-            <input
-              className="register-input"
-              type="text"
-              onChange={onChange}
-              placeholder="Name"
-              name="name"
-              value={values["name"]}
-              required
-            />
-
-            <input
-              className="register-input"
-              type="text"
-              onChange={onChange}
-              placeholder="Nickname"
-              name="nickName"
-              value={values["nickName"]}
-              required
-            />
-
-            <input
-              className="register-input"
-              type="number"
-              max={100}
-              min={18}
-              onChange={onChange}
-              placeholder="Age"
-              name="age"
-              value={values["age"]}
-              required
-            />
+            {inputRegister.slice(0, 4).map((item, index) => (
+              <input
+                key={index}
+                className="register-input"
+                type={item.type}
+                placeholder={item.placeholder}
+                name={item.name}
+                value={values[item.name]}
+                onChange={onChange}
+                max={item.max ?? null}
+                min={item.min ?? null}
+                required
+              />
+            ))}
           </div>
 
           <div className="register-group">
-            <input
-              className="register-input"
-              type="text"
-              onChange={onChange}
-              placeholder="Address"
-              name="address"
-              value={values["address"]}
-              required
-            />
-
-            <input
-              className="register-input"
-              type="text"
-              onChange={onChange}
-              placeholder="Phone"
-              name="phoneNumber"
-              value={values["phoneNumber"]}
-              required
-            />
-
-            <input
-              className="register-input"
-              type="password"
-              onChange={onChange}
-              placeholder="Password"
-              name="password"
-              value={values["password"]}
-              required
-            />
-
-            {/* <input
-              className="register-input"
-              type="password"
-              onChange={onChange}
-              placeholder="Confirm password"
-              name="confirmPassword"
-              value={values["confirmPassword"]}
-            /> */}
+            {inputRegister.slice(4, inputRegister.length).map((item, index) => (
+              <input
+                key={index}
+                className="register-input"
+                type={item.type}
+                placeholder={item.placeholder}
+                name={item.name}
+                value={values[item.name]}
+                onChange={onChange}
+                required
+              />
+            ))}
 
             <select className="register-select" onChange={onChange} name="role">
+              <option className="register-option" value="USER_NORMAL">
+                USER_NORMAL
+              </option>
               <option className="register-option" value="MANAGER">
                 MANAGER
               </option>
@@ -186,9 +137,6 @@ const Register = () => {
                 value="EMPLOYEE_OF_COMMODITY_GATHERING"
               >
                 EMPLOYEE_OF_COMMODITY_GATHERING
-              </option>
-              <option className="register-option" value="USER_NORMAL">
-                USER_NORMAL
               </option>
             </select>
           </div>

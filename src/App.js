@@ -25,8 +25,9 @@ import NotFound from "./pages/notFound/NotFound";
 // const Chat = lazy(() => import("./pages/Chat"));
 
 const PrivateRoute = ({ element }) => {
-  const { currentUser } = useContext(AuthContext);
-  return currentUser.accessToken ? element : <Navigate to="/" />;
+  // const { currentUser } = useContext(AuthContext);
+  // return currentUser.accessToken ? element : <Navigate to="/" />;
+  return element;
 };
 
 const App = () => {

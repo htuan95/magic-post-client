@@ -23,14 +23,14 @@
         margin-bottom: 10px;
 
         &:hover {
-          background-color: #29313a;
-          transition: all 0.2s linear;
+          background-color: #8665f7;
+          transition: all 0.3s ease;
           cursor: pointer;
         }
       }
 
       .sidebar-item.active {
-        background-color: #29313a;
+        background-color: #8665f7;
       }
     }
   }
@@ -42,7 +42,7 @@
     font-size: 18px;
 
     &:hover {
-      background-color: #29313a;
+      background-color: #8665f7;
       cursor: pointer;
     }
   }
