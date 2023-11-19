@@ -17,7 +17,7 @@ const Home = () => {
   //     setIsPage401(true);
   //   }
   // }, [errorPage]);
-  const [selectedMenu, setSelectedMenu] = useState("Exchange");
+  const [selectedMenu, setSelectedMenu] = useState("User");
   const onChangeMenu = (selectedMenu) => {
     setSelectedMenu(selectedMenu);
   };

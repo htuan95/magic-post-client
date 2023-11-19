@@ -3,6 +3,8 @@ import Table from "../table/Table";
 import "./mainTable.scss";
 import { MdOutlineAdd } from "react-icons/md";
 import FormModal from "../formModal/FormModal";
+import ManageUser from "../manage_users/ManageUser";
+import FormUser from "../formModal/FormUser";
 
 const MainTable = ({ title }) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -22,7 +24,7 @@ const MainTable = ({ title }) => {
             <MdOutlineAdd />
           </button>
         </div>
-        <Table name={title} />
+        {title === "User" ? <ManageUser /> : <Table name={title} />}
       </div>
       <div class="main-table-pagination">
         <button className="pagination-btn prev-btn">Prev</button>
@@ -30,7 +32,13 @@ const MainTable = ({ title }) => {
         <button className="pagination-btn next-btn">Next</button>
       </div>
 
-      {isOpenModal && <FormModal closeFormModal={closeFormModal} />}
+      {isOpenModal && title === "Exchange" && (
+        <FormModal closeFormModal={closeFormModal} />
+      )}
+
+      {isOpenModal && title === "User" && (
+        <FormUser closeFormModal={closeFormModal} />
+      )}
     </div>
   );
 };

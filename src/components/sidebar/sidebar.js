@@ -7,15 +7,10 @@ import Loading from "../loading/loading";
 import { AuthContext } from "../../context/AuthContext";
 
 const Sidebar = ({ selectedMenu, onChangeMenu }) => {
-  // const [selectedMenu, setSelectedMenu] = useState("Exchange");
   const navigate = useNavigate();
   const [openPopup, setOpenPopup] = useState(false);
   const [loading, setLoading] = useState(false);
   const { successMessage } = useContext(AuthContext);
-
-  // const onChangeMenu = (selectedMenu) => {
-  //   setSelectedMenu(selectedMenu);
-  // };
 
   const handleLogout = () => {
     setLoading(true);
@@ -35,6 +30,14 @@ const Sidebar = ({ selectedMenu, onChangeMenu }) => {
         </Link>
 
         <ul className="sidebar-menu">
+          <li
+            onClick={() => onChangeMenu("User")}
+            className={
+              selectedMenu === "User" ? "sidebar-item active" : "sidebar-item"
+            }
+          >
+            User
+          </li>
           <li
             onClick={() => onChangeMenu("Exchange")}
             className={
