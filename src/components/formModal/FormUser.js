@@ -7,15 +7,19 @@ import Loading from "../loading/loading";
 import { AiOutlineClose } from "react-icons/ai";
 import { inputExchange, inputRegister } from "../../helpers/inputHelpers";
 
-const FormUser = ({ closeFormModal }) => {
+const FormUser = ({ closeFormModal, user }) => {
   const { successMessage, errorMessage, setCurrentUser } =
     useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const [values, setValues] = useState({
-    exchangeLeaderId: "",
-    exchangeName: "",
-    exchangeAddress: "",
+    name: "",
+    email: "",
+    nickName: "",
+    age: "",
+    address: "",
+    phoneNumber: "",
+    password: "",
+    role: "USER_NORMAL",
   });
 
   const onChange = (e) => {

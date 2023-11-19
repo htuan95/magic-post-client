@@ -18,7 +18,6 @@ const Register = () => {
     address: "",
     phoneNumber: "",
     password: "",
-    // confirmPassword: "",
     role: "USER_NORMAL",
   });
 

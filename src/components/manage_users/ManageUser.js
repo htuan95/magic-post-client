@@ -1,12 +1,31 @@
+import { useContext, useState } from "react";
 import "./manageUser.css";
 import {
   MdOutlineEdit,
   MdOutlineRemoveRedEye,
   MdOutlineDelete,
 } from "react-icons/md";
+import { AuthContext } from "../../context/AuthContext";
+import Loading from "../loading/loading";
+import ViewUser from "../viewPopup/ViewUser";
+import { GetLeadersExchange } from "../../services/getReq";
 
-const ManageUser = () => {
-  let rows = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+const ManageUser = ({ role }) => {
+  const { errorMessage } = useContext(AuthContext);
+  const [isVisible, setIsVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState({});
+
+  // open visible
+  const openVisible = () => setIsVisible(true);
+  // close visible
+  const closeVisible = () => setIsVisible(false);
+
+  // get list users by role
+  const { isLoading, data, error } = GetLeadersExchange("users", role);
+
+  // show ... when strings too long
+  const handleStrings = (s) => (s.length > 6 ? s.substr(0, 6) + "..." : s);
+
   return (
     <div class="manage-user-box">
       {/* table header  */}
@@ -23,55 +42,66 @@ const ManageUser = () => {
       </div>
 
       {/* table rows */}
-      {rows.map((item, index) => (
-        <div class="manage-user-row">
-          <div class="manage-user-cell first-cell">
-            <p className="manage-user-cell-text">
-              Resume Hello world how are you today
-            </p>
+      {isLoading ? (
+        <Loading />
+      ) : error ? (
+        errorMessage("Something went wrong")
+      ) : (
+        data.map((item, index) => (
+          <div class="manage-user-row" key={index}>
+            <div class="manage-user-cell first-cell">
+              <p className="manage-user-cell-text">{handleStrings(item.id)}</p>
+            </div>
+            <div class="manage-user-cell second-cell">
+              <p className="manage-user-cell-text">
+                {handleStrings(item.email)}
+              </p>
+            </div>
+            <div class="manage-user-cell third-cell">
+              <p className="manage-user-cell-text">
+                {handleStrings(item.name)}
+              </p>
+            </div>
+            <div class="manage-user-cell fourth-cell">
+              <p className="manage-user-cell-text">
+                {handleStrings(item.nickName)}
+              </p>
+            </div>
+            <div class="manage-user-cell fifth-cell">
+              <p className="manage-user-cell-text">{handleStrings(item.age)}</p>
+            </div>
+            <div class="manage-user-cell sixth-cell">
+              <p className="manage-user-cell-text">
+                {handleStrings(item.address)}
+              </p>
+            </div>
+            <div class="manage-user-cell seventh-cell">
+              <p className="manage-user-cell-text">
+                {handleStrings(item.phoneNumber)}
+              </p>
+            </div>
+            <div class="manage-user-cell eighth-cell">
+              <p className="manage-user-cell-text">
+                {handleStrings(item.role)}
+              </p>
+            </div>
+            <div class="manage-user-cell last-cell manage-user-actions">
+              <MdOutlineRemoveRedEye
+                className="manage-user-actions-icon add"
+                onClick={() => {
+                  openVisible();
+                  setSelectedUser(item);
+                }}
+              />
+              <MdOutlineEdit className="manage-user-actions-icon edit" />
+              <MdOutlineDelete className="manage-user-actions-icon delete" />
+            </div>
           </div>
-          <div class="manage-user-cell second-cell">
-            <p className="manage-user-cell-text">
-              Resume Hello world how are you today
-            </p>
-          </div>
-          <div class="manage-user-cell third-cell">
-            <p className="manage-user-cell-text">
-              Resume Hello world how are you today
-            </p>
-          </div>
-          <div class="manage-user-cell fourth-cell">
-            <p className="manage-user-cell-text">
-              Resume Hello world how are you today
-            </p>
-          </div>
-          <div class="manage-user-cell fifth-cell">
-            <p className="manage-user-cell-text">
-              Resume Hello world how are you today
-            </p>
-          </div>
-          <div class="manage-user-cell sixth-cell">
-            <p className="manage-user-cell-text">
-              Resume Hello world how are you today
-            </p>
-          </div>
-          <div class="manage-user-cell seventh-cell">
-            <p className="manage-user-cell-text">
-              Resume Hello world how are you today
-            </p>
-          </div>
-          <div class="manage-user-cell eighth-cell">
-            <p className="manage-user-cell-text">
-              Resume Hello world how are you today
-            </p>
-          </div>
-          <div class="manage-user-cell last-cell manage-user-actions">
-            <MdOutlineRemoveRedEye className="manage-user-actions-icon add" />
-            <MdOutlineEdit className="manage-user-actions-icon edit" />
-            <MdOutlineDelete className="manage-user-actions-icon delete" />
-          </div>
-        </div>
-      ))}
+        ))
+      )}
+      {isVisible && (
+        <ViewUser user={selectedUser} closeVisible={closeVisible} />
+      )}
     </div>
   );
 };

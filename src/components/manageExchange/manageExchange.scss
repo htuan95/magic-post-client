@@ -1,17 +1,16 @@
-.main-table {
+.manage-exchange {
   height: 100%;
   padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  .main-table-container {
-    .main-table-top {
+  .manage-exchange-container {
+    .manage-exchange-header {
       display: flex;
       align-items: flex-start;
-      //   align-items: center;
       justify-content: space-between;
 
-      .main-table-top-actions {
+      .manage-exchange-actions {
         display: flex;
         align-items: center;
         gap: 20px;
@@ -36,13 +35,7 @@
           }
         }
 
-        .main-table-roles {
-          width: 80px;
-          .main-table-role-option {
-          }
-        }
-
-        .main-table-filter {
+        .manage-exchange-filter {
           border: none;
           cursor: pointer;
           border: 10px;
@@ -64,36 +57,9 @@
         }
       }
 
-      .main-table-title {
+      .manage-exchange-title {
         margin-bottom: 16px;
       }
-    }
-  }
-
-  .main-table-pagination {
-    display: flex;
-    align-items: center;
-    justify-content: end;
-    gap: 10px;
-
-    .pagination-btn {
-      border: none;
-      background-color: white;
-      cursor: pointer;
-      padding: 6px 12px;
-      border-radius: 10px;
-      border: 1px solid black;
-      font-size: 14px;
-
-      &:hover {
-        background-color: black;
-        transition: all 0.2s ease;
-        color: white;
-      }
-    }
-
-    .pagination-current {
-      //   color: black;
     }
   }
 }

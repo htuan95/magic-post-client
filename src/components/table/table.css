@@ -14,7 +14,7 @@
 .table-row:hover {
   background-color: #29313a;
   transition: all 0.3s ease;
-  cursor: pointer;
+  cursor: text;
 }
 
 .table-row:first-child {
@@ -43,7 +43,7 @@
 
 .table-cell {
   display: table-cell;
-  width: 25%;
+  width: 20%;
   padding: 4px 0;
   vertical-align: middle;
   text-align: left;
