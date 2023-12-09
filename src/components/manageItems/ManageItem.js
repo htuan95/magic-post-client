@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import "./manageExchange.scss";
+import "./manageItem.scss";
 import { MdOutlineAdd } from "react-icons/md";
 import FilterExchange from "../filterPopup/FilterExchange";
 import Table from "../table/Table";
@@ -9,8 +9,9 @@ import makeRequest from "../../services/makeRequest";
 import Loading from "../loading/loading";
 import FormExchangeModal from "../formModal/FormExchangeModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import TableItem from "../table/TableItem";
 
-const ManageExchange = () => {
+const ManageItem = () => {
   const { currentUser, errorMessage } = useContext(AuthContext);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isFilterExchange, setIsFilterExchange] = useState(false);
@@ -26,9 +27,9 @@ const ManageExchange = () => {
   const closeFilterExchange = () => setIsFilterExchange(false);
 
   // Handle filters exchange
-  const [currentExchange, setCurrentExchange] = useState([]);
+  const [currentItem, setCurrentItem] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
-  const getFilterExchange = (data) => setCurrentExchange(data);
+  const getFilterExchange = (data) => setCurrentItem(data);
 
   const queryClient = useQueryClient();
 
@@ -63,14 +64,14 @@ const ManageExchange = () => {
   });
 
   return (
-    <div className="manage-exchange">
-      <div className="manage-exchange-container">
-        <div className="manage-exchange-header">
-          <h2 className="manage-exchange-title">Exchange management</h2>
-          <div className="manage-exchange-actions">
+    <div className="manage-item">
+      <div className="manage-item-container">
+        <div className="manage-item-header">
+          <h2 className="manage-item-title">Items management</h2>
+          <div className="manage-item-actions">
             {isFiltering ? (
               <button
-                className="manage-exchange-filter"
+                className="manage-item-filter"
                 onClick={() => {
                   setIsFiltering(false);
                   queryClient.invalidateQueries(["exchanges"]);
@@ -80,7 +81,7 @@ const ManageExchange = () => {
               </button>
             ) : (
               <button
-                className="manage-exchange-filter"
+                className="manage-item-filter"
                 onClick={openFilterExchange}
               >
                 Filter
@@ -92,11 +93,11 @@ const ManageExchange = () => {
             </button>
           </div>
         </div>
-        <Table
-          name="Exchange"
-          dataExchange={data}
+        <TableItem
+          name="Item"
+          dataItem={data}
           isFiltering={isFiltering}
-          currentExchange={currentExchange}
+          currentItem={currentItem}
         />
       </div>
 
@@ -136,4 +137,4 @@ const ManageExchange = () => {
   );
 };
 
-export default ManageExchange;
+export default ManageItem;

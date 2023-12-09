@@ -58,6 +58,14 @@ const Sidebar = ({ selectedMenu, onChangeMenu }) => {
           >
             Gathering
           </li>
+          <li
+            onClick={() => onChangeMenu("Items")}
+            className={
+              selectedMenu === "Items" ? "sidebar-item active" : "sidebar-item"
+            }
+          >
+            Items
+          </li>
         </ul>
       </div>
 

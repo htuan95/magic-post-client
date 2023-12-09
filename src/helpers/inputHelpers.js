@@ -124,3 +124,58 @@ export const inputViewUser = [
     placeholder: "Role",
   },
 ];
+
+export const inputGathering = [
+  {
+    name: "gatheringLeaderId",
+    type: "text",
+    placeholder: "Gathering leader ID",
+  },
+  {
+    name: "gatheringName",
+    type: "text",
+    placeholder: "Gathering name",
+  },
+  {
+    name: "gatheringAddress",
+    type: "text",
+    placeholder: "Gathering address",
+  },
+];
+
+export const inputFilterGatherings = [
+  {
+    name: "gatheringName",
+    type: "text",
+    placeholder: "Gathering name",
+  },
+  {
+    name: "gatheringAddress",
+    type: "text",
+    placeholder: "Gathering address",
+  },
+];
+
+export const inputConfirmReceivedItem = [
+  {
+    name: "itemName",
+    type: "text",
+    placeholder: "Name",
+  },
+  {
+    name: "itemType",
+    type: "text",
+    placeholder: "Type",
+  },
+  {
+    name: "itemDescription",
+    type: "text",
+    placeholder: "Description",
+  },
+  {
+    name: "itemMass",
+    type: "number",
+    placeholder: "Mass",
+  },
+];
+

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import makeRequest from "../../services/makeRequest";
-import "./table.css";
+import "./tableItem.css";
 import {
   MdOutlineEdit,
   MdOutlineRemoveRedEye,
@@ -11,7 +11,7 @@ import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import PopupOptions from "../popup/Popup";
 
-const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
+const TableItem = ({ name, isFiltering, dataItem, currentItem }) => {
   const getStrings = (s) =>
     s != null ? (s?.length > 28 ? s?.substr(0, 24) + "..." : s) : "";
   const { currentUser, successMessage, errorMessage } = useContext(AuthContext);
@@ -53,50 +53,50 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
   const [idItemDelete, setIdItemDelete] = useState("");
 
   return (
-    <div class="table-box">
+    <div class="table-item-box">
       {/* {isLoading && <Loading />} */}
-      {/* table header  */}
-      <div class="table-head">
-        <div class="table-cell">
-          <p>ID</p>
+      {/* table-item header  */}
+      <div class="table-item-head">
+        <div class="table-item-cell">
+          <p>Name</p>
         </div>
-        <div class="table-cell">
-          <p>{name} Name</p>
+        <div class="table-item-cell">
+          <p></p>
         </div>
-        <div class="table-cell">
+        <div class="table-item-cell">
           <p>{name} Address</p>
         </div>
-        <div class="table-cell">
+        <div class="table-item-cell">
           <p>{name} leader id</p>
         </div>
-        <div class="table-cell">
+        <div class="table-item-cell">
           <p></p>
         </div>
       </div>
 
-      {/* table rows */}
-      {currentExchange?.length <= 0 && isFiltering ? (
+      {/* table-item rows */}
+      {currentItem?.length <= 0 && isFiltering ? (
         <p>No exchange match</p>
       ) : (
-        currentExchange?.map((item, index) => (
-          <div class="table-row" key={index}>
-            <div class="table-cell first-cell">
+        currentItem?.map((item, index) => (
+          <div class="table-item-row" key={index}>
+            <div class="table-item-cell first-cell">
               <p>{getStrings(item.id)}</p>
             </div>
-            <div class="table-cell second-cell">
+            <div class="table-item-cell second-cell">
               <p>{getStrings(item.exchangeName)}</p>
             </div>
-            <div class="table-cell third-cell">
+            <div class="table-item-cell third-cell">
               <p>{getStrings(item.exchangeAddress)}</p>
             </div>
-            <div class="table-cell last-cell">
+            <div class="table-item-cell last-cell">
               <p>{getStrings(item.exchangeLeaderId)}</p>
             </div>
-            <div class="table-cell table-actions">
-              <MdOutlineRemoveRedEye className="table-actions-icon add" />
-              <MdOutlineEdit className="table-actions-icon edit" />
+            <div class="table-item-cell table-item-actions">
+              <MdOutlineRemoveRedEye className="table-item-actions-icon add" />
+              <MdOutlineEdit className="table-item-actions-icon edit" />
               <MdOutlineDelete
-                className="table-actions-icon delete"
+                className="table-item-actions-icon delete"
                 onClick={() => {
                   setOpenPopupDelete(true);
                   setIdItemDelete(item.id);
@@ -106,28 +106,28 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
           </div>
         ))
       )}
-      {dataExchange?.length <= 0 ? (
+      {dataItem?.length <= 0 ? (
         <p></p>
       ) : (
-        dataExchange?.map((item, index) => (
-          <div class="table-row" key={index}>
-            <div class="table-cell first-cell">
+        dataItem?.map((item, index) => (
+          <div class="table-item-row" key={index}>
+            <div class="table-item-cell first-cell">
               <p>{getStrings(item.id)}</p>
             </div>
-            <div class="table-cell second-cell">
+            <div class="table-item-cell second-cell">
               <p>{getStrings(item.exchangeName)}</p>
             </div>
-            <div class="table-cell third-cell">
+            <div class="table-item-cell third-cell">
               <p>{getStrings(item.exchangeAddress)}</p>
             </div>
-            <div class="table-cell last-cell">
+            <div class="table-item-cell last-cell">
               <p>{getStrings(item.exchangeLeaderId)}</p>
             </div>
-            <div class="table-cell table-actions">
-              <MdOutlineRemoveRedEye className="table-actions-icon add" />
-              <MdOutlineEdit className="table-actions-icon edit" />
+            <div class="table-item-cell table-item-actions">
+              <MdOutlineRemoveRedEye className="table-item-actions-icon add" />
+              <MdOutlineEdit className="table-item-actions-icon edit" />
               <MdOutlineDelete
-                className="table-actions-icon delete"
+                className="table-item-actions-icon delete"
                 onClick={() => {
                   setOpenPopupDelete(true);
                   setIdItemDelete(item.id);
@@ -149,4 +149,4 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
   );
 };
 
-export default Table;
+export default TableItem;

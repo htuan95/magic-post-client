@@ -1,20 +1,22 @@
-import "./formExchangeModal.css";
-import { useContext, useState } from "react";
-import makeRequest from "../../services/makeRequest";
-import { AuthContext } from "../../context/AuthContext";
-import Loading from "../loading/loading";
+import React, { useContext, useState } from "react";
+import makeRequest from "../../../services/makeRequest";
+import { AuthContext } from "../../../context/AuthContext";
+import { GetLeaders } from "../../../services/getReq";
 import { AiOutlineClose } from "react-icons/ai";
-import { inputFilterExchange } from "../../helpers/inputHelpers";
-import { GetLeaders } from "../../services/getReq";
+import Loading from "../../loading/loading";
+import { inputConfirmReceivedItem } from "../../../helpers/inputHelpers";
 import { useQueryClient } from "@tanstack/react-query";
+import "./confirmReceivedItem.scss";
 
-const FormExchangeModal = ({ closeFormModal }) => {
-  const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
+const ConfirmReceivedItem = () => {
+  const { successMessage, errorMessage, setCurrentUser, currentUser } =
+    useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-  const [leaderId, setLeaderId] = useState("");
   const [values, setValues] = useState({
-    exchangeName: "",
-    exchangeAddress: "",
+    itemDescription: "",
+    itemName: "",
+    itemType: "",
+    itemMass: "",
   });
 
   const onChange = (e) => {
@@ -22,29 +24,21 @@ const FormExchangeModal = ({ closeFormModal }) => {
   };
 
   const queryClient = useQueryClient();
+  const [leaderId, setLeaderId] = useState("");
 
-  const handleAddNewExchange = async (e) => {
+  const confirmReceivedItem = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     await makeRequest
-      .post(
-        "/manager/add-new-exchange",
-        {
-          exchangeLeaderId: leaderId,
-          exchangeAddress: values["exchangeAddress"],
-          exchangeName: values["exchangeName"],
-        },
-        {
-          headers: { Authorization: `Bearer ${currentUser.accessToken}` },
-        }
-      )
+      .post("/user/register", values, {
+        headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+      })
       .then((res) => {
         setTimeout(() => {
-          queryClient.invalidateQueries(["exchanges"]);
+          setCurrentUser(res.data.data);
           successMessage("Add successful");
           setLoading(false);
-          closeFormModal();
         }, 1000);
       })
       .catch((err) => {
@@ -55,51 +49,49 @@ const FormExchangeModal = ({ closeFormModal }) => {
   };
 
   // get list users by role
-  const {
-    isLoading,
-    data: leadersExchange,
-    error,
-  } = GetLeaders("users", "LEADER_OF_COMMODITY_EXCHANGE");
+  const { isLoading, data: users, error } = GetLeaders("users", "USER_NORMAL");
+
+  // get list exchange
 
   const [openListAssign, setOpenListAssign] = useState(false);
 
   return (
-    <div class="form-exchange">
+    <div class="confirm-item">
       {loading && <Loading />}
-      <div className="form-exchange-container">
-        <form className="form-exchange-form" onSubmit={handleAddNewExchange}>
-          <div className="form-exchange-form-group">
+      <div className="confirm-item-container">
+        <form className="confirm-item-form" onSubmit={confirmReceivedItem}>
+          <div className="confirm-item-form-group">
             <button
-              className="form-exchange-assign"
+              className="confirm-item-choose-exchange"
               onClick={() => setOpenListAssign(true)}
             >
-              Assign leader
+              Choose exchange
             </button>
             {openListAssign && (
-              <div className="form-exchange-list-leader">
+              <div className="confirm-item-list-user">
                 {isLoading ? (
                   <Loading />
                 ) : error ? (
                   errorMessage("Something went wrong")
-                ) : leadersExchange.length === 0 ? (
+                ) : users.length === 0 ? (
                   <p>Not have any leader exchange</p>
                 ) : (
-                  leadersExchange.map((u, i) => (
+                  users.map((u, i) => (
                     <div
-                      className="form-exchange-list-item"
+                      className="confirm-item-list-item"
                       key={i}
                       onClick={() => {
-                        setLeaderId(u.id);
+                        // setLeaderId(u.id);
                         setOpenListAssign(false);
                       }}
                     >
-                      <p className="form-exchange-list-item-name">{u.name}</p>
+                      <p className="confirm-item-list-item-name">{u.name}</p>
                     </div>
                   ))
                 )}
 
                 <div
-                  className="form-exchange-leader-close"
+                  className="confirm-item-user-close"
                   onClick={() => setOpenListAssign(false)}
                 >
                   <AiOutlineClose />
@@ -109,15 +101,15 @@ const FormExchangeModal = ({ closeFormModal }) => {
             <input
               type="text"
               placeholder="Exchange leader id"
-              className="form-exchange-input"
+              className="confirm-item-input"
               name="exchangeLeaderId"
               value={leaderId}
               onChange={() => {}}
               required
             />
-            {inputFilterExchange.map((item, index) => (
+            {inputConfirmReceivedItem.map((item, index) => (
               <input
-                className="form-exchange-input"
+                className="confirm-item-input"
                 type={item.type}
                 placeholder={item.placeholder}
                 name={item.name}
@@ -129,17 +121,13 @@ const FormExchangeModal = ({ closeFormModal }) => {
             ))}
           </div>
 
-          <button className="form-exchange-btn" type="submit">
+          <button className="confirm-item-btn" type="submit">
             Submit
           </button>
         </form>
       </div>
-      <AiOutlineClose
-        className="form-exchange-close"
-        onClick={closeFormModal}
-      />
     </div>
   );
 };
 
-export default FormExchangeModal;
+export default ConfirmReceivedItem;

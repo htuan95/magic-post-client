@@ -1,20 +1,20 @@
-import "./formExchangeModal.css";
+import "./formGatheringModal.css";
 import { useContext, useState } from "react";
 import makeRequest from "../../services/makeRequest";
 import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import { AiOutlineClose } from "react-icons/ai";
-import { inputFilterExchange } from "../../helpers/inputHelpers";
-import { GetLeaders } from "../../services/getReq";
+import { inputFilterGatherings } from "../../helpers/inputHelpers";
 import { useQueryClient } from "@tanstack/react-query";
+import { GetLeaders } from "../../services/getReq";
 
-const FormExchangeModal = ({ closeFormModal }) => {
+const FormGatheringModal = ({ closeFormModal }) => {
   const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [leaderId, setLeaderId] = useState("");
   const [values, setValues] = useState({
-    exchangeName: "",
-    exchangeAddress: "",
+    gatheringName: "",
+    gatheringAddress: "",
   });
 
   const onChange = (e) => {
@@ -23,17 +23,17 @@ const FormExchangeModal = ({ closeFormModal }) => {
 
   const queryClient = useQueryClient();
 
-  const handleAddNewExchange = async (e) => {
+  const handleAddNewGathering = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     await makeRequest
       .post(
-        "/manager/add-new-exchange",
+        "/manager/add-new-gathering",
         {
-          exchangeLeaderId: leaderId,
-          exchangeAddress: values["exchangeAddress"],
-          exchangeName: values["exchangeName"],
+          gatheringLeaderId: leaderId,
+          gatheringAddress: values["gatheringAddress"],
+          gatheringName: values["gatheringName"],
         },
         {
           headers: { Authorization: `Bearer ${currentUser.accessToken}` },
@@ -41,7 +41,7 @@ const FormExchangeModal = ({ closeFormModal }) => {
       )
       .then((res) => {
         setTimeout(() => {
-          queryClient.invalidateQueries(["exchanges"]);
+          queryClient.invalidateQueries(["gatherings"]);
           successMessage("Add successful");
           setLoading(false);
           closeFormModal();
@@ -57,49 +57,49 @@ const FormExchangeModal = ({ closeFormModal }) => {
   // get list users by role
   const {
     isLoading,
-    data: leadersExchange,
+    data: leaderGathering,
     error,
-  } = GetLeaders("users", "LEADER_OF_COMMODITY_EXCHANGE");
+  } = GetLeaders("users", "LEADER_OF_COMMODITY_GATHERING");
 
   const [openListAssign, setOpenListAssign] = useState(false);
 
   return (
-    <div class="form-exchange">
+    <div class="form-gathering">
       {loading && <Loading />}
-      <div className="form-exchange-container">
-        <form className="form-exchange-form" onSubmit={handleAddNewExchange}>
-          <div className="form-exchange-form-group">
+      <div className="form-gathering-container">
+        <form className="form-gathering-form" onSubmit={handleAddNewGathering}>
+          <div className="form-gathering-form-group">
             <button
-              className="form-exchange-assign"
+              className="form-gathering-assign"
               onClick={() => setOpenListAssign(true)}
             >
               Assign leader
             </button>
             {openListAssign && (
-              <div className="form-exchange-list-leader">
+              <div className="form-gathering-list-leader">
                 {isLoading ? (
                   <Loading />
                 ) : error ? (
                   errorMessage("Something went wrong")
-                ) : leadersExchange.length === 0 ? (
-                  <p>Not have any leader exchange</p>
+                ) : leaderGathering.length === 0 ? (
+                  <p>Not have any leader gathering</p>
                 ) : (
-                  leadersExchange.map((u, i) => (
+                  leaderGathering.map((u, i) => (
                     <div
-                      className="form-exchange-list-item"
+                      className="form-gathering-list-item"
                       key={i}
                       onClick={() => {
                         setLeaderId(u.id);
                         setOpenListAssign(false);
                       }}
                     >
-                      <p className="form-exchange-list-item-name">{u.name}</p>
+                      <p className="form-gathering-list-item-name">{u.name}</p>
                     </div>
                   ))
                 )}
 
                 <div
-                  className="form-exchange-leader-close"
+                  className="form-gathering-leader-close"
                   onClick={() => setOpenListAssign(false)}
                 >
                   <AiOutlineClose />
@@ -108,16 +108,16 @@ const FormExchangeModal = ({ closeFormModal }) => {
             )}
             <input
               type="text"
-              placeholder="Exchange leader id"
-              className="form-exchange-input"
-              name="exchangeLeaderId"
+              placeholder="Gathering leader id"
+              className="form-gathering-input"
+              name="gatheringLeaderId"
               value={leaderId}
-              onChange={() => {}}
+              // onChange={onChange}
               required
             />
-            {inputFilterExchange.map((item, index) => (
+            {inputFilterGatherings.map((item, index) => (
               <input
-                className="form-exchange-input"
+                className="form-gathering-input"
                 type={item.type}
                 placeholder={item.placeholder}
                 name={item.name}
@@ -129,17 +129,17 @@ const FormExchangeModal = ({ closeFormModal }) => {
             ))}
           </div>
 
-          <button className="form-exchange-btn" type="submit">
+          <button className="form-gathering-btn" type="submit">
             Submit
           </button>
         </form>
       </div>
       <AiOutlineClose
-        className="form-exchange-close"
+        className="form-gathering-close"
         onClick={closeFormModal}
       />
     </div>
   );
 };
 
-export default FormExchangeModal;
+export default FormGatheringModal;

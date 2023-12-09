@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import makeRequest from "../../services/makeRequest";
-import "./table.css";
+import "./tableGathering.css";
 import {
   MdOutlineEdit,
   MdOutlineRemoveRedEye,
@@ -11,7 +11,12 @@ import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import PopupOptions from "../popup/Popup";
 
-const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
+const TableGathering = ({
+  name,
+  isFiltering,
+  dataGathering,
+  currentGathering,
+}) => {
   const getStrings = (s) =>
     s != null ? (s?.length > 28 ? s?.substr(0, 24) + "..." : s) : "";
   const { currentUser, successMessage, errorMessage } = useContext(AuthContext);
@@ -21,11 +26,11 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
   const [loading, setLoading] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: async (exchangeId) => {
+    mutationFn: async (gatheringId) => {
       setLoading(true);
       await makeRequest
         .post(
-          `/manager/delete-exchange?exchangeId=${exchangeId}`,
+          `/manager/delete-gathering?gatheringId=${gatheringId}`,
           {},
           {
             headers: { Authorization: `Bearer ${currentUser.accessToken}` },
@@ -41,62 +46,62 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
         });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["exchanges"] });
+      queryClient.invalidateQueries({ queryKey: ["gatherings"] });
     },
   });
 
-  const handleRemoveItem = async (exchangeId) => {
-    await mutation.mutateAsync(exchangeId);
+  const handleRemoveItem = async (gatheringId) => {
+    await mutation.mutateAsync(gatheringId);
   };
 
   const [openPopupDelete, setOpenPopupDelete] = useState(false);
   const [idItemDelete, setIdItemDelete] = useState("");
 
   return (
-    <div class="table-box">
+    <div class="gathering-box">
       {/* {isLoading && <Loading />} */}
       {/* table header  */}
-      <div class="table-head">
-        <div class="table-cell">
+      <div class="gathering-head">
+        <div class="gathering-cell">
           <p>ID</p>
         </div>
-        <div class="table-cell">
+        <div class="gathering-cell">
           <p>{name} Name</p>
         </div>
-        <div class="table-cell">
+        <div class="gathering-cell">
           <p>{name} Address</p>
         </div>
-        <div class="table-cell">
+        <div class="gathering-cell">
           <p>{name} leader id</p>
         </div>
-        <div class="table-cell">
+        <div class="gathering-cell">
           <p></p>
         </div>
       </div>
 
       {/* table rows */}
-      {currentExchange?.length <= 0 && isFiltering ? (
+      {currentGathering?.length <= 0 && isFiltering ? (
         <p>No exchange match</p>
       ) : (
-        currentExchange?.map((item, index) => (
-          <div class="table-row" key={index}>
-            <div class="table-cell first-cell">
+        currentGathering?.map((item, index) => (
+          <div class="gathering-row" key={index}>
+            <div class="gathering-cell first-cell">
               <p>{getStrings(item.id)}</p>
             </div>
-            <div class="table-cell second-cell">
+            <div class="gathering-cell second-cell">
               <p>{getStrings(item.exchangeName)}</p>
             </div>
-            <div class="table-cell third-cell">
+            <div class="gathering-cell third-cell">
               <p>{getStrings(item.exchangeAddress)}</p>
             </div>
-            <div class="table-cell last-cell">
+            <div class="gathering-cell last-cell">
               <p>{getStrings(item.exchangeLeaderId)}</p>
             </div>
-            <div class="table-cell table-actions">
-              <MdOutlineRemoveRedEye className="table-actions-icon add" />
-              <MdOutlineEdit className="table-actions-icon edit" />
+            <div class="gathering-cell gathering-actions">
+              <MdOutlineRemoveRedEye className="gathering-actions-icon add" />
+              <MdOutlineEdit className="gathering-actions-icon edit" />
               <MdOutlineDelete
-                className="table-actions-icon delete"
+                className="gathering-actions-icon delete"
                 onClick={() => {
                   setOpenPopupDelete(true);
                   setIdItemDelete(item.id);
@@ -106,28 +111,28 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
           </div>
         ))
       )}
-      {dataExchange?.length <= 0 ? (
+      {dataGathering?.length <= 0 ? (
         <p></p>
       ) : (
-        dataExchange?.map((item, index) => (
-          <div class="table-row" key={index}>
-            <div class="table-cell first-cell">
+        dataGathering?.map((item, index) => (
+          <div class="gathering-row" key={index}>
+            <div class="gathering-cell first-cell">
               <p>{getStrings(item.id)}</p>
             </div>
-            <div class="table-cell second-cell">
-              <p>{getStrings(item.exchangeName)}</p>
+            <div class="gathering-cell second-cell">
+              <p>{getStrings(item.gatheringName)}</p>
             </div>
-            <div class="table-cell third-cell">
-              <p>{getStrings(item.exchangeAddress)}</p>
+            <div class="gathering-cell third-cell">
+              <p>{getStrings(item.gatheringAddress)}</p>
             </div>
-            <div class="table-cell last-cell">
-              <p>{getStrings(item.exchangeLeaderId)}</p>
+            <div class="gathering-cell last-cell">
+              <p>{getStrings(item.gatheringLeaderId)}</p>
             </div>
-            <div class="table-cell table-actions">
-              <MdOutlineRemoveRedEye className="table-actions-icon add" />
-              <MdOutlineEdit className="table-actions-icon edit" />
+            <div class="gathering-cell gathering-actions">
+              <MdOutlineRemoveRedEye className="gathering-actions-icon add" />
+              <MdOutlineEdit className="gathering-actions-icon edit" />
               <MdOutlineDelete
-                className="table-actions-icon delete"
+                className="gathering-actions-icon delete"
                 onClick={() => {
                   setOpenPopupDelete(true);
                   setIdItemDelete(item.id);
@@ -139,7 +144,7 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
       )}
       {openPopupDelete && (
         <PopupOptions
-          title="Delete exchange"
+          title="Delete gathering"
           handleAction={() => handleRemoveItem(idItemDelete)}
           loading={loading}
           setOpenPopup={setOpenPopupDelete}
@@ -149,4 +154,4 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
   );
 };
 
-export default Table;
+export default TableGathering;

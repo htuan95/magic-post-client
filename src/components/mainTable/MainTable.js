@@ -6,10 +6,11 @@ import FormModal from "../formModal/FormExchangeModal";
 import ManageUser from "../manage_users/ManageUser";
 import FormUser from "../formModal/FormUser";
 import FilterExchange from "../filterPopup/FilterExchange";
+import FormEmployeeExchange from "../exchangeController/addEmployeeAccount/FormEmployeeExchange";
 
 const MainTable = ({ title }) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [role, setRole] = useState("USER_NORMAL");
+  const [role, setRole] = useState("LEADER_OF_COMMODITY_EXCHANGE");
   const [isFilterExchange, setIsFilterExchange] = useState(false);
 
   // Open modal
@@ -45,9 +46,6 @@ const MainTable = ({ title }) => {
                 className="main-table-roles"
                 onChange={(e) => onChangeRole(e)}
               >
-                <option className="main-table-role-option" value="USER_NORMAL">
-                  USER_NORMAL
-                </option>
                 <option
                   className="main-table-role-option"
                   value="LEADER_OF_COMMODITY_EXCHANGE"
@@ -56,21 +54,9 @@ const MainTable = ({ title }) => {
                 </option>
                 <option
                   className="main-table-role-option"
-                  value="EMPLOYEE_OF_COMMODITY_EXCHANGE"
-                >
-                  EMPLOYEE_OF_COMMODITY_EXCHANGE
-                </option>
-                <option
-                  className="main-table-role-option"
                   value="LEADER_OF_COMMODITY_GATHERING"
                 >
                   LEADER_OF_COMMODITY_GATHERING
-                </option>
-                <option
-                  className="main-table-role-option"
-                  value="EMPLOYEE_OF_COMMODITY_GATHERING"
-                >
-                  EMPLOYEE_OF_COMMODITY_GATHERING
                 </option>
               </select>
             )}
@@ -80,7 +66,7 @@ const MainTable = ({ title }) => {
             </button>
           </div>
         </div>
-        {title === "User" ? <ManageUser role={role} /> : <Table name={title} />}
+        {title === "Employee" ? <ManageUser role={role} /> : <Table name={title} />}
       </div>
       <div class="main-table-pagination">
         <button className="pagination-btn prev-btn">Prev</button>
@@ -92,8 +78,9 @@ const MainTable = ({ title }) => {
         <FormModal closeFormModal={closeFormModal} />
       )}
 
-      {isOpenModal && title === "User" && (
-        <FormUser closeFormModal={closeFormModal} role={role} />
+      {isOpenModal && title === "Employee" && ( // old: User
+        // <FormUser closeFormModal={closeFormModal} role={role} />
+        <FormEmployeeExchange closeFormModal={closeFormModal} />
       )}
 
       {isFilterExchange && title === "Exchange" && (

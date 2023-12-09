@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import "./manageExchange.scss";
+import "./manageGathering.scss";
 import { MdOutlineAdd } from "react-icons/md";
 import FilterExchange from "../filterPopup/FilterExchange";
 import Table from "../table/Table";
@@ -7,13 +7,14 @@ import Pagination from "../../commons/Pagination";
 import { AuthContext } from "../../context/AuthContext";
 import makeRequest from "../../services/makeRequest";
 import Loading from "../loading/loading";
-import FormExchangeModal from "../formModal/FormExchangeModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import FormGatheringModal from "../formModal/FormGatheringModal";
+import TableGathering from "../table/TableGathering";
 
-const ManageExchange = () => {
+const ManageGathering = () => {
   const { currentUser, errorMessage } = useContext(AuthContext);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isFilterExchange, setIsFilterExchange] = useState(false);
+  const [isFilterGathering, setIsFilterGathering] = useState(false);
 
   // Open modal
   const openFormModal = () => setIsOpenModal(true);
@@ -21,14 +22,14 @@ const ManageExchange = () => {
   const closeFormModal = () => setIsOpenModal(false);
 
   // open filter exchange
-  const openFilterExchange = () => setIsFilterExchange(true);
+  const openFilterExchange = () => setIsFilterGathering(true);
   // close filter exchange
-  const closeFilterExchange = () => setIsFilterExchange(false);
+  const closeFilterExchange = () => setIsFilterGathering(false);
 
   // Handle filters exchange
-  const [currentExchange, setCurrentExchange] = useState([]);
+  const [currentGathering, setCurrentGathering] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
-  const getFilterExchange = (data) => setCurrentExchange(data);
+  const getFilterExchange = (data) => setCurrentGathering(data);
 
   const queryClient = useQueryClient();
 
@@ -46,11 +47,11 @@ const ManageExchange = () => {
   };
 
   const { isLoading, data, error } = useQuery({
-    queryKey: ["exchanges", page],
+    queryKey: ["gatherings", page],
     queryFn: () =>
       makeRequest
         .post(
-          `/listing/get-list-exchange?page=${page}`,
+          `/listing/get-list-gathering?page=${page}`,
           {},
           {
             headers: { Authorization: `Bearer ${currentUser.accessToken}` },
@@ -63,40 +64,40 @@ const ManageExchange = () => {
   });
 
   return (
-    <div className="manage-exchange">
-      <div className="manage-exchange-container">
-        <div className="manage-exchange-header">
-          <h2 className="manage-exchange-title">Exchange management</h2>
-          <div className="manage-exchange-actions">
+    <div className="manage-gathering">
+      <div className="manage-gathering-container">
+        <div className="manage-gathering-header">
+          <h2 className="manage-gathering-title">Gathering management</h2>
+          <div className="manage-gathering-actions">
             {isFiltering ? (
               <button
-                className="manage-exchange-filter"
+                className="manage-gathering-filter"
                 onClick={() => {
                   setIsFiltering(false);
-                  queryClient.invalidateQueries(["exchanges"]);
+                  queryClient.invalidateQueries(["gatherings"]);
                 }}
               >
                 Remove Filter
               </button>
             ) : (
               <button
-                className="manage-exchange-filter"
+                className="manage-gathering-filter"
                 onClick={openFilterExchange}
               >
                 Filter
               </button>
             )}
             <button className="btn-add" onClick={openFormModal}>
-              <p>Add new exchange</p>
+              <p>Add new gathering</p>
               <MdOutlineAdd />
             </button>
           </div>
         </div>
-        <Table
-          name="Exchange"
-          dataExchange={data}
+        <TableGathering
+          name="Gathering"
+          dataGathering={data}
           isFiltering={isFiltering}
-          currentExchange={currentExchange}
+          currentGathering={currentGathering}
         />
       </div>
 
@@ -123,9 +124,9 @@ const ManageExchange = () => {
         </div>
       )}
 
-      {isOpenModal && <FormExchangeModal closeFormModal={closeFormModal} />}
+      {isOpenModal && <FormGatheringModal closeFormModal={closeFormModal} />}
 
-      {isFilterExchange && (
+      {isFilterGathering && (
         <FilterExchange
           closeFilterExchange={closeFilterExchange}
           getFilterExchange={getFilterExchange}
@@ -136,4 +137,4 @@ const ManageExchange = () => {
   );
 };
 
-export default ManageExchange;
+export default ManageGathering;

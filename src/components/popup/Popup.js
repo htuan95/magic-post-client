@@ -10,7 +10,13 @@ const PopupOptions = ({ title, handleAction, loading, setOpenPopup }) => {
       <div className="pu-options-container">
         <h3 className="pu-options-title">{title}</h3>
         <ul className="pu-options-list">
-          <li className="pu-options-item" onClick={handleAction}>
+          <li
+            className="pu-options-item"
+            onClick={() => {
+              handleAction();
+              handleCloseOptions(setOpenPopup);
+            }}
+          >
             Confirm
           </li>
 

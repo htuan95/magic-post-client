@@ -8,10 +8,12 @@ import {
 import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import ViewUser from "../viewPopup/ViewUser";
-import { GetLeadersExchange } from "../../services/getReq";
+import { GetLeaders } from "../../services/getReq";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import makeRequest from "../../services/makeRequest";
 
 const ManageUser = ({ role }) => {
-  const { errorMessage } = useContext(AuthContext);
+  const { errorMessage, currentUser, successMessage } = useContext(AuthContext);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState({});
 
@@ -21,7 +23,7 @@ const ManageUser = ({ role }) => {
   const closeVisible = () => setIsVisible(false);
 
   // get list users by role
-  const { isLoading, data, error } = GetLeadersExchange("users", role);
+  const { isLoading, data, error } = GetLeaders("users", role);
 
   // show ... when strings too long
   const handleStrings = (s) => (s.length > 6 ? s.substr(0, 6) + "..." : s);

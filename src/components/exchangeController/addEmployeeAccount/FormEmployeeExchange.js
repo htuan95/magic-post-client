@@ -1,13 +1,13 @@
-import "./formUser.css";
-import { useNavigate, Link } from "react-router-dom";
+import "./formEmployeeExchange.css";
 import { useContext, useState } from "react";
-import makeRequest from "../../services/makeRequest";
-import { AuthContext } from "../../context/AuthContext";
-import Loading from "../loading/loading";
 import { AiOutlineClose } from "react-icons/ai";
-import { inputExchange, inputRegister } from "../../helpers/inputHelpers";
+import { AuthContext } from "../../../context/AuthContext";
+import makeRequest from "../../../services/makeRequest";
+import Loading from "../../loading/loading";
+import { inputRegister } from "../../../helpers/inputHelpers";
+import ViewUser from "../../viewPopup/ViewUser";
 
-const FormUser = ({ closeFormModal, user }) => {
+const FormEmployeeExchange = ({ closeFormModal }) => {
   const { successMessage, errorMessage, setCurrentUser, currentUser } =
     useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -19,27 +19,34 @@ const FormUser = ({ closeFormModal, user }) => {
     address: "",
     phoneNumber: "",
     password: "",
-    role: "LEADER_OF_COMMODITY_EXCHANGE",
+    role: "EMPLOYEE_OF_COMMODITY_EXCHANGE",
   });
 
   const onChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const handleAddNewExchange = async (e) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [infoEmployee, setInfoEmployee] = useState({});
+  // open visible
+  const openVisible = () => setIsVisible(true);
+  // close visible
+  const closeVisible = () => setIsVisible(false);
+
+  const createNewEmployee = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     await makeRequest
-      .post("/user/register", values, {
+      .post("/exchange/add-employee-account", values, {
         headers: { Authorization: `Bearer ${currentUser.accessToken}` },
       })
       .then((res) => {
         setTimeout(() => {
-          setCurrentUser(res.data.data);
           successMessage("Add successful");
           setLoading(false);
           closeFormModal();
+          setInfoEmployee(values);
         }, 1000);
       })
       .catch((err) => {
@@ -53,7 +60,7 @@ const FormUser = ({ closeFormModal, user }) => {
     <div class="form-modal-user">
       {loading && <Loading />}
       <div className="form-modal-user-container">
-        <form className="form-modal-user-form" onSubmit={handleAddNewExchange}>
+        <form className="form-modal-user-form" onSubmit={createNewEmployee}>
           <div className="form-modal-user-form-group">
             <div className="form-modal-user-child">
               {inputRegister.slice(0, 4).map((item, index) => (
@@ -91,16 +98,9 @@ const FormUser = ({ closeFormModal, user }) => {
               >
                 <option
                   className="form-modal-user-option"
-                  value="LEADER_OF_COMMODITY_EXCHANGE"
+                  value="EMPLOYEE_OF_COMMODITY_EXCHANGE"
                 >
-                  LEADER_OF_COMMODITY_EXCHANGE
-                </option>
-
-                <option
-                  className="form-modal-user-option"
-                  value="LEADER_OF_COMMODITY_GATHERING"
-                >
-                  LEADER_OF_COMMODITY_GATHERING
+                  EMPLOYEE_OF_COMMODITY_EXCHANGE
                 </option>
               </select>
             </div>
@@ -115,8 +115,12 @@ const FormUser = ({ closeFormModal, user }) => {
         className="form-modal-user-close"
         onClick={closeFormModal}
       />
+
+      {isVisible && (
+        <ViewUser user={infoEmployee} closeVisible={closeVisible} />
+      )}
     </div>
   );
 };
 
-export default FormUser;
+export default FormEmployeeExchange;
