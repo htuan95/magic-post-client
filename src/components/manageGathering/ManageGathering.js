@@ -38,12 +38,10 @@ const ManageGathering = () => {
   const [totalPage, setTotalPage] = useState(0);
   const prevPage = () => {
     page > 0 && setPage(page - 1);
-    console.log("prev");
   };
 
   const nextPage = () => {
     page + 1 < totalPage && setPage(page + 1);
-    console.log("next");
   };
 
   const { isLoading, data, error } = useQuery({

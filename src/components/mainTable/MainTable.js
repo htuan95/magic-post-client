@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Table from "../table/Table";
 import "./mainTable.scss";
 import { MdOutlineAdd } from "react-icons/md";
 import FormModal from "../formModal/FormExchangeModal";
 import ManageUser from "../manage_users/ManageUser";
-import FormUser from "../formModal/FormUser";
 import FilterExchange from "../filterPopup/FilterExchange";
 import FormEmployeeExchange from "../exchangeController/addEmployeeAccount/FormEmployeeExchange";
+import FormLeader from "../formModal/FormLeader";
+import { AuthContext } from "../../context/AuthContext";
 
 const MainTable = ({ title }) => {
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [role, setRole] = useState("LEADER_OF_COMMODITY_EXCHANGE");
   const [isFilterExchange, setIsFilterExchange] = useState(false);
+  const { currentUser } = useContext(AuthContext);
 
   // Open modal
   const openFormModal = () => setIsOpenModal(true);
@@ -39,7 +41,7 @@ const MainTable = ({ title }) => {
                 Filters
               </button>
             )}
-            {title === "User" && (
+            {title === "Leader" && (
               <select
                 name="roles"
                 id="roles"
@@ -66,7 +68,16 @@ const MainTable = ({ title }) => {
             </button>
           </div>
         </div>
-        {title === "Employee" ? <ManageUser role={role} /> : <Table name={title} />}
+        {title === "Leader" ? (
+          <ManageUser role={role} />
+        ) : (
+          // <Table name={title} />
+          <></>
+        )}
+        {/* {title === "Employee" ? (
+        ) : (
+          <Table name={title} />
+        )} */}
       </div>
       <div class="main-table-pagination">
         <button className="pagination-btn prev-btn">Prev</button>
@@ -78,9 +89,21 @@ const MainTable = ({ title }) => {
         <FormModal closeFormModal={closeFormModal} />
       )}
 
-      {isOpenModal && title === "Employee" && ( // old: User
-        // <FormUser closeFormModal={closeFormModal} role={role} />
-        <FormEmployeeExchange closeFormModal={closeFormModal} />
+      {isOpenModal &&
+        title === "Employee" && ( // old: User
+          // <FormUser closeFormModal={closeFormModal} role={role} />
+          <FormEmployeeExchange
+            closeFormModal={closeFormModal}
+            role={
+              currentUser?.role === "LEADER_OF_COMMODITY_EXCHANGE"
+                ? "EMPLOYEE_OF_COMMODITY_EXCHANGE"
+                : "EMPLOYEE_OF_COMMODITY_GATHERING"
+            }
+          />
+        )}
+
+      {isOpenModal && title === "Leader" && (
+        <FormLeader closeFormModal={closeFormModal} />
       )}
 
       {isFilterExchange && title === "Exchange" && (

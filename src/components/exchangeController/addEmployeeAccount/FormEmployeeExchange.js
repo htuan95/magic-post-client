@@ -7,7 +7,7 @@ import Loading from "../../loading/loading";
 import { inputRegister } from "../../../helpers/inputHelpers";
 import ViewUser from "../../viewPopup/ViewUser";
 
-const FormEmployeeExchange = ({ closeFormModal }) => {
+const FormEmployeeExchange = ({ closeFormModal, role }) => {
   const { successMessage, errorMessage, setCurrentUser, currentUser } =
     useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -19,7 +19,7 @@ const FormEmployeeExchange = ({ closeFormModal }) => {
     address: "",
     phoneNumber: "",
     password: "",
-    role: "EMPLOYEE_OF_COMMODITY_EXCHANGE",
+    role: role,
   });
 
   const onChange = (e) => {
@@ -37,8 +37,11 @@ const FormEmployeeExchange = ({ closeFormModal }) => {
     e.preventDefault();
     setLoading(true);
 
+    let route =
+      role === "EMPLOYEE_OF_COMMODITY_EXCHANGE" ? "exchange" : "gathering";
+
     await makeRequest
-      .post("/exchange/add-employee-account", values, {
+      .post(`/${route}/add-employee-account`, values, {
         headers: { Authorization: `Bearer ${currentUser.accessToken}` },
       })
       .then((res) => {
@@ -96,11 +99,8 @@ const FormEmployeeExchange = ({ closeFormModal }) => {
                 onChange={onChange}
                 name="role"
               >
-                <option
-                  className="form-modal-user-option"
-                  value="EMPLOYEE_OF_COMMODITY_EXCHANGE"
-                >
-                  EMPLOYEE_OF_COMMODITY_EXCHANGE
+                <option className="form-modal-user-option" value={role}>
+                  {role}
                 </option>
               </select>
             </div>

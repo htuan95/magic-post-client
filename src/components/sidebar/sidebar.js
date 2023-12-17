@@ -10,7 +10,7 @@ const Sidebar = ({ selectedMenu, onChangeMenu }) => {
   const navigate = useNavigate();
   const [openPopup, setOpenPopup] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { successMessage } = useContext(AuthContext);
+  const { successMessage, currentUser } = useContext(AuthContext);
 
   const handleLogout = () => {
     setLoading(true);
@@ -30,42 +30,64 @@ const Sidebar = ({ selectedMenu, onChangeMenu }) => {
         </Link>
 
         <ul className="sidebar-menu">
-          <li
-            onClick={() => onChangeMenu("User")}
-            className={
-              selectedMenu === "User" ? "sidebar-item active" : "sidebar-item"
-            }
-          >
-            User
-          </li>
-          <li
-            onClick={() => onChangeMenu("Exchange")}
-            className={
-              selectedMenu === "Exchange"
-                ? "sidebar-item active"
-                : "sidebar-item"
-            }
-          >
-            Exchange
-          </li>
-          <li
-            onClick={() => onChangeMenu("Gathering")}
-            className={
-              selectedMenu === "Gathering"
-                ? "sidebar-item active"
-                : "sidebar-item"
-            }
-          >
-            Gathering
-          </li>
-          <li
-            onClick={() => onChangeMenu("Items")}
-            className={
-              selectedMenu === "Items" ? "sidebar-item active" : "sidebar-item"
-            }
-          >
-            Items
-          </li>
+          {currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" &&
+            currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" && (
+              <li
+                onClick={() => onChangeMenu("User")}
+                className={
+                  selectedMenu === "User"
+                    ? "sidebar-item active"
+                    : "sidebar-item"
+                }
+              >
+                User
+              </li>
+            )}
+          {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
+            currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
+            currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" &&
+            currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
+              <li
+                onClick={() => onChangeMenu("Exchange")}
+                className={
+                  selectedMenu === "Exchange"
+                    ? "sidebar-item active"
+                    : "sidebar-item"
+                }
+              >
+                Exchange
+              </li>
+            )}
+          {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
+            currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
+            currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" &&
+            currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
+              <li
+                onClick={() => onChangeMenu("Gathering")}
+                className={
+                  selectedMenu === "Gathering"
+                    ? "sidebar-item active"
+                    : "sidebar-item"
+                }
+              >
+                Gathering
+              </li>
+            )}
+          {(currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE" ||
+            currentUser.role === "EMPLOYEE_OF_COMMODITY_GATHERING" ||
+            currentUser.role === "MANAGER" ||
+            currentUser.role === "LEADER_OF_COMMODITY_EXCHANGE") && (
+            <li
+              onClick={() => onChangeMenu("Items")}
+              className={
+                selectedMenu === "Items"
+                  ? "sidebar-item active"
+                  : "sidebar-item"
+              }
+            >
+              Items
+            </li>
+          )}
         </ul>
       </div>
 

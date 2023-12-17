@@ -8,16 +8,22 @@ import "./main.scss";
 import { AuthContext } from "../../context/AuthContext";
 import ConfirmReceivedItem from "../exchangeController/confirmReceivedItem/ConfirmReceivedItem";
 import ManageItem from "../manageItems/ManageItem";
+import ManagerManageItem from "../managerController/ManagerManageItem";
+import LeaderExchangeManageItem from "../managerController/LeaderExchangeManageItem";
 
 const Main = ({ selectedMenu }) => {
   const { currentUser } = useContext(AuthContext);
-  console.log(currentUser);
 
   const caseManager = () => {
     switch (selectedMenu) {
       case "User":
-        if (currentUser?.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE") {
+        if (
+          currentUser?.role === "LEADER_OF_COMMODITY_EXCHANGE" ||
+          currentUser?.role === "LEADER_OF_COMMODITY_GATHERING"
+        ) {
           return <MainTable title="Employee" />;
+        } else if (currentUser?.role === "MANAGER") {
+          return <MainTable title="Leader" />;
         }
         return <MainTable title="Employee" />;
       case "Exchange":
@@ -25,7 +31,12 @@ const Main = ({ selectedMenu }) => {
       case "Gathering":
         return <ManageGathering />;
       case "Items":
-          return <ManageItem />;
+        if (currentUser?.role === "MANAGER") {
+          return <ManagerManageItem />;
+        } else if (currentUser?.role === "LEADER_OF_COMMODITY_EXCHANGE") {
+          return <LeaderExchangeManageItem />;
+        }
+        return <ManageItem />;
       default:
         break;
     }

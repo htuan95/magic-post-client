@@ -1,13 +1,17 @@
 import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../../context/AuthContext";
 import UnAuthorized from "../../UnAuthorized";
 import Sidebar from "../../components/sidebar/sidebar";
 import Main from "../../components/main/Main";
 import "./home.scss";
 import Intro from "../intro/Intro";
+import { useQuery } from "@tanstack/react-query";
+import makeRequest from "../../services/makeRequest";
+import { AuthContext } from "../../context/AuthContext";
+import Loading from "../../components/loading/loading";
 
 const Home = () => {
-  // const { currentUser, setCurrentUser, errorPage } = useContext(AuthContext);
+  const { currentUser, setCurrentUser, errorMessage, successMessage } =
+    useContext(AuthContext);
   const [showTopSub, setShowTopSub] = useState(false);
   const [isPage401, setIsPage401] = useState(false);
 
@@ -17,23 +21,49 @@ const Home = () => {
   //     setIsPage401(true);
   //   }
   // }, [errorPage]);
-  const [selectedMenu, setSelectedMenu] = useState("User");
+  const [selectedMenu, setSelectedMenu] = useState(
+    currentUser.role ===
+      ("EMPLOYEE_OF_COMMODITY_GATHERING" || "EMPLOYEE_OF_COMMODITY_EXCHANGE")
+      ? "Items"
+      : "User"
+  );
   const onChangeMenu = (selectedMenu) => {
     setSelectedMenu(selectedMenu);
   };
 
-  return (
-    <div className={isPage401 ? "home unauthorized" : "home"}>
-      <Sidebar selectedMenu={selectedMenu} onChangeMenu={onChangeMenu} />
-      <Main selectedMenu={selectedMenu} />
-      {/* {isPage401 && (
-        <UnAuthorized
-          setIsPage401={setIsPage401}
-          setCurrentUser={setCurrentUser}
-        />
-      )} */}
-    </div>
-  );
+  const { isLoading, data, error } = useQuery({
+    queryKey: ["my-role"],
+    queryFn: () =>
+      makeRequest
+        .get(`/user/get-role-user?userId=${currentUser?.userId}`, {
+          headers: { Authorization: `Bearer ${currentUser?.accessToken}` },
+        })
+        .then((res) => {
+          return res.data.data;
+        }),
+  });
+  if (isLoading) {
+    return <Loading />;
+  } else {
+    if (error) {
+      return errorMessage("Something went wrong");
+    } else {
+      currentUser.role = data;
+      localStorage.setItem("userData", JSON.stringify(currentUser));
+      return (
+        <div className={isPage401 ? "home unauthorized" : "home"}>
+          <Sidebar selectedMenu={selectedMenu} onChangeMenu={onChangeMenu} />
+          <Main selectedMenu={selectedMenu} />
+          {/* {isPage401 && (
+            <UnAuthorized
+              setIsPage401={setIsPage401}
+              setCurrentUser={setCurrentUser}
+            />
+          )} */}
+        </div>
+      );
+    }
+  }
 };
 
 export default Home;

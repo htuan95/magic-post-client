@@ -33,8 +33,6 @@ const Register = () => {
     let convertAgeToInt = parseInt(age);
     const data = { age: convertAgeToInt, ...others };
 
-    console.log(data);
-
     await makeRequest
       .post("/user/register", data)
       .then((res) => {

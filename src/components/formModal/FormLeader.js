@@ -7,7 +7,7 @@ import Loading from "../loading/loading";
 import { AiOutlineClose } from "react-icons/ai";
 import { inputExchange, inputRegister } from "../../helpers/inputHelpers";
 
-const FormUser = ({ closeFormModal, user }) => {
+const FormLeader = ({ closeFormModal }) => {
   const { successMessage, errorMessage, setCurrentUser, currentUser } =
     useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -119,4 +119,4 @@ const FormUser = ({ closeFormModal, user }) => {
   );
 };
 
-export default FormUser;
+export default FormLeader;

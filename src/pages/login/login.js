@@ -31,6 +31,7 @@ const Login = () => {
           setCurrentUser(res.data.data);
           successMessage("Login successful");
           setLoading(false);
+          
           navigate("/home");
         }, 1000);
       })

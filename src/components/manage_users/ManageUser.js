@@ -9,7 +9,7 @@ import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import ViewUser from "../viewPopup/ViewUser";
 import { GetLeaders } from "../../services/getReq";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import makeRequest from "../../services/makeRequest";
 
 const ManageUser = ({ role }) => {
@@ -26,7 +26,40 @@ const ManageUser = ({ role }) => {
   const { isLoading, data, error } = GetLeaders("users", role);
 
   // show ... when strings too long
-  const handleStrings = (s) => (s.length > 6 ? s.substr(0, 6) + "..." : s);
+  const handleStrings = (s) =>
+    s != null ? (s.length > 6 ? s.substr(0, 6) + "..." : s) : "";
+
+  // pagination
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
+  const prevPage = () => {
+    page > 0 && setPage(page - 1);
+  };
+
+  const nextPage = () => {
+    page + 1 < totalPage && setPage(page + 1);
+  };
+
+  // const {
+  //   isLoading: loadingEmployee,
+  //   data: dataEmployee,
+  //   error: errorEmployee,
+  // } = useQuery({
+  //   queryKey: ["users-employee", page],
+  //   queryFn: () =>
+  //     makeRequest
+  //       .post(
+  //         `/listing/get-list-normal-user?page=${page}`,
+  //         {},
+  //         {
+  //           headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+  //         }
+  //       )
+  //       .then((res) => {
+  //         setTotalPage(res.data.pagination.totalPage);
+  //         return res.data.data;
+  //       }),
+  // });
 
   return (
     <div class="manage-user-box">
@@ -95,8 +128,8 @@ const ManageUser = ({ role }) => {
                   setSelectedUser(item);
                 }}
               />
-              <MdOutlineEdit className="manage-user-actions-icon edit" />
-              <MdOutlineDelete className="manage-user-actions-icon delete" />
+              {/* <MdOutlineEdit className="manage-user-actions-icon edit" />
+              <MdOutlineDelete className="manage-user-actions-icon delete" /> */}
             </div>
           </div>
         ))

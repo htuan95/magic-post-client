@@ -10,6 +10,7 @@ import Loading from "../loading/loading";
 import FormExchangeModal from "../formModal/FormExchangeModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import TableItem from "../table/TableItem";
+import ConfirmReceivedItem from "../exchangeController/confirmReceivedItem/ConfirmReceivedItem";
 
 const ManageItem = () => {
   const { currentUser, errorMessage } = useContext(AuthContext);
@@ -38,20 +39,23 @@ const ManageItem = () => {
   const [totalPage, setTotalPage] = useState(0);
   const prevPage = () => {
     page > 0 && setPage(page - 1);
-    console.log("prev");
   };
 
   const nextPage = () => {
     page + 1 < totalPage && setPage(page + 1);
-    console.log("next");
   };
 
+  const itemLocationType =
+    currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE"
+      ? "EXCHANGE"
+      : "GATHERING";
+
   const { isLoading, data, error } = useQuery({
-    queryKey: ["exchanges", page],
+    queryKey: ["items", page, itemLocationType],
     queryFn: () =>
       makeRequest
         .post(
-          `/listing/get-list-exchange?page=${page}`,
+          `/listing/get-list-item-in-exchange-or-gathering?itemLocationType=${itemLocationType}&page=${page}`,
           {},
           {
             headers: { Authorization: `Bearer ${currentUser.accessToken}` },
@@ -69,7 +73,7 @@ const ManageItem = () => {
         <div className="manage-item-header">
           <h2 className="manage-item-title">Items management</h2>
           <div className="manage-item-actions">
-            {isFiltering ? (
+            {/* {isFiltering ? (
               <button
                 className="manage-item-filter"
                 onClick={() => {
@@ -86,11 +90,13 @@ const ManageItem = () => {
               >
                 Filter
               </button>
+            )} */}
+            {currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" && (
+              <button className="btn-add" onClick={openFormModal}>
+                <p>Confirm received item</p>
+                <MdOutlineAdd />
+              </button>
             )}
-            <button className="btn-add" onClick={openFormModal}>
-              <p>Add new exchange</p>
-              <MdOutlineAdd />
-            </button>
           </div>
         </div>
         <TableItem
@@ -124,7 +130,7 @@ const ManageItem = () => {
         </div>
       )}
 
-      {isOpenModal && <FormExchangeModal closeFormModal={closeFormModal} />}
+      {isOpenModal && <ConfirmReceivedItem closeFormModal={closeFormModal} />}
 
       {isFilterExchange && (
         <FilterExchange
