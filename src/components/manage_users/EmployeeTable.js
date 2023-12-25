@@ -4,9 +4,11 @@ import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import ViewUser from "../viewPopup/ViewUser";
+import makeRequest from "../../services/makeRequest";
+import { useQuery } from "@tanstack/react-query";
 
-const ManageUser = ({ isLoading, data, error }) => {
-  const { errorMessage } = useContext(AuthContext);
+const EmployeeTable = ({ isLoading, error, data }) => {
+  const { errorMessage, currentUser } = useContext(AuthContext);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedUser, setSelectedUser] = useState({});
 
@@ -40,7 +42,7 @@ const ManageUser = ({ isLoading, data, error }) => {
       ) : error ? (
         errorMessage("Something went wrong")
       ) : (
-        data.map((item, index) => (
+        data?.map((item, index) => (
           <div class="manage-user-row" key={index}>
             <div class="manage-user-cell first-cell">
               <p className="manage-user-cell-text">{handleStrings(item.id)}</p>
@@ -99,4 +101,4 @@ const ManageUser = ({ isLoading, data, error }) => {
   );
 };
 
-export default ManageUser;
+export default EmployeeTable;

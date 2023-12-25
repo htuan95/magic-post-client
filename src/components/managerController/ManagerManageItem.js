@@ -57,19 +57,21 @@ const ManagerManageItem = () => {
           <h2 className="main-table-title">Items management</h2>
           <div className="main-table-top-actions">
             {currentUser.role === "MANAGER" && (
-              <select
-                name="roles"
-                id="roles"
-                className="main-table-roles"
-                onChange={(e) => onChangeRole(e)}
-              >
-                <option className="main-table-role-option" value="EXCHANGE">
-                  EXCHANGE
-                </option>
-                <option className="main-table-role-option" value="GATHERING">
-                  GATHERING
-                </option>
-              </select>
+              <div className="main-table-select-option">
+                <select
+                  name="roles"
+                  id="roles"
+                  className="main-table-roles"
+                  onChange={(e) => onChangeRole(e)}
+                >
+                  <option className="main-table-role-option" value="EXCHANGE">
+                    EXCHANGE
+                  </option>
+                  <option className="main-table-role-option" value="GATHERING">
+                    GATHERING
+                  </option>
+                </select>
+              </div>
             )}
 
             {currentUser.role !== "MANAGER" && (

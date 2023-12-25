@@ -5,16 +5,15 @@ import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import { AiOutlineClose } from "react-icons/ai";
 import { inputFilterExchange } from "../../helpers/inputHelpers";
-import { GetLeaders } from "../../services/getReq";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-const FormExchangeModal = ({ closeFormModal }) => {
+const FormExchangeModal = ({ closeFormModal, item }) => {
   const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-  const [leaderId, setLeaderId] = useState("");
+  const [leaderId, setLeaderId] = useState(item?.exchangeLeaderId ?? "");
   const [values, setValues] = useState({
-    exchangeName: "",
-    exchangeAddress: "",
+    exchangeName: item?.exchangeName ?? "",
+    exchangeAddress: item?.exchangeAddress ?? "",
   });
 
   const onChange = (e) => {
@@ -23,29 +22,41 @@ const FormExchangeModal = ({ closeFormModal }) => {
 
   const queryClient = useQueryClient();
 
+  let type = item?.id?.length > 0 ? "Edit" : "Add";
   const handleAddNewExchange = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     await makeRequest
       .post(
-        "/manager/add-new-exchange",
-        {
-          exchangeLeaderId: leaderId,
-          exchangeAddress: values["exchangeAddress"],
-          exchangeName: values["exchangeName"],
-        },
+        item?.id?.length > 0
+          ? "/exchange/edit-exchange-info?exchangeId=" + item.id
+          : "/manager/add-new-exchange",
+        item?.id?.length > 0
+          ? {
+              exchangeAddress: values["exchangeAddress"],
+              exchangeName: values["exchangeName"],
+            }
+          : {
+              exchangeLeaderId: leaderId,
+              exchangeAddress: values["exchangeAddress"],
+              exchangeName: values["exchangeName"],
+            },
         {
           headers: { Authorization: `Bearer ${currentUser.accessToken}` },
         }
       )
       .then((res) => {
-        setTimeout(() => {
-          queryClient.invalidateQueries(["exchanges"]);
-          successMessage("Add successful");
-          setLoading(false);
-          closeFormModal();
-        }, 1000);
+        if (res.data.status === "Success") {
+          setTimeout(() => {
+            queryClient.invalidateQueries(["exchanges"]);
+            successMessage(`${type} successful`);
+            closeFormModal();
+          }, 1000);
+        } else {
+          errorMessage("Something went wrong...");
+        }
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -54,12 +65,32 @@ const FormExchangeModal = ({ closeFormModal }) => {
       });
   };
 
+  const [page, setPage] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
+
+  const prevPage = () => {
+    page > 0 && setPage(page - 1);
+  };
+
+  const nextPage = () => {
+    page + 1 < totalPage && setPage(page + 1);
+  };
+
+  const role = "LEADER_OF_COMMODITY_EXCHANGE";
+
   // get list users by role
-  const {
-    isLoading,
-    data: leadersExchange,
-    error,
-  } = GetLeaders("users", "LEADER_OF_COMMODITY_EXCHANGE");
+  const { isLoading, data, error } = useQuery({
+    queryKey: ["leaders", page, role],
+    queryFn: () =>
+      makeRequest
+        .get(`/manager/get-list-leader?role=${role}&page=${page}`, {
+          headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+        })
+        .then((res) => {
+          setTotalPage(res.data.pagination.totalPage);
+          return res.data.data;
+        }),
+  });
 
   const [openListAssign, setOpenListAssign] = useState(false);
 
@@ -69,33 +100,58 @@ const FormExchangeModal = ({ closeFormModal }) => {
       <div className="form-exchange-container">
         <form className="form-exchange-form" onSubmit={handleAddNewExchange}>
           <div className="form-exchange-form-group">
-            <button
-              className="form-exchange-assign"
-              onClick={() => setOpenListAssign(true)}
-            >
-              Assign leader
-            </button>
+            {type === "Add" && (
+              <button
+                className="form-exchange-assign"
+                onClick={() => setOpenListAssign(true)}
+                type="button"
+              >
+                Assign leader
+              </button>
+            )}
             {openListAssign && (
               <div className="form-exchange-list-leader">
                 {isLoading ? (
                   <Loading />
                 ) : error ? (
                   errorMessage("Something went wrong")
-                ) : leadersExchange.length === 0 ? (
+                ) : data.length <= 0 ? (
                   <p>Not have any leader exchange</p>
                 ) : (
-                  leadersExchange.map((u, i) => (
+                  data.map((u, i) => (
                     <div
                       className="form-exchange-list-item"
                       key={i}
                       onClick={() => {
-                        setLeaderId(u.id);
+                        setLeaderId(u.userId);
                         setOpenListAssign(false);
                       }}
                     >
                       <p className="form-exchange-list-item-name">{u.name}</p>
                     </div>
                   ))
+                )}
+
+                {totalPage > 0 && (
+                  <div class="pagination create-new-exchange">
+                    <button
+                      className="pagination-btn prev-btn create-new-exchange"
+                      type="button"
+                      onClick={prevPage}
+                    >
+                      Prev
+                    </button>
+                    <p className="pagination-current confirm-item-p">
+                      {page + 1} / {totalPage}
+                    </p>
+                    <button
+                      className="pagination-btn next-btn confirm-item-p"
+                      type="button"
+                      onClick={nextPage}
+                    >
+                      Next
+                    </button>
+                  </div>
                 )}
 
                 <div

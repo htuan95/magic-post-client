@@ -8,13 +8,13 @@ import { inputFilterGatherings } from "../../helpers/inputHelpers";
 import { useQueryClient } from "@tanstack/react-query";
 import { GetLeaders } from "../../services/getReq";
 
-const FormGatheringModal = ({ closeFormModal }) => {
+const FormGatheringModal = ({ closeFormModal, item }) => {
   const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
-  const [leaderId, setLeaderId] = useState("");
+  const [leaderId, setLeaderId] = useState(item?.gatheringLeaderId ?? "");
   const [values, setValues] = useState({
-    gatheringName: "",
-    gatheringAddress: "",
+    gatheringName: item?.gatheringName ?? "",
+    gatheringAddress: item?.gatheringAddress ?? "",
   });
 
   const onChange = (e) => {
@@ -22,6 +22,7 @@ const FormGatheringModal = ({ closeFormModal }) => {
   };
 
   const queryClient = useQueryClient();
+  let type = item?.id?.length > 0 ? "Edit" : "Add";
 
   const handleAddNewGathering = async (e) => {
     e.preventDefault();
@@ -29,23 +30,34 @@ const FormGatheringModal = ({ closeFormModal }) => {
 
     await makeRequest
       .post(
-        "/manager/add-new-gathering",
-        {
-          gatheringLeaderId: leaderId,
-          gatheringAddress: values["gatheringAddress"],
-          gatheringName: values["gatheringName"],
-        },
+        item?.id?.length > 0
+          ? "/gathering/edit-gathering-info?gatheringId=" + item.id
+          : "/manager/add-new-gathering",
+        item?.id?.length > 0
+          ? {
+              gatheringAddress: values["gatheringAddress"],
+              gatheringName: values["gatheringName"],
+            }
+          : {
+              gatheringLeaderId: leaderId,
+              gatheringAddress: values["gatheringAddress"],
+              gatheringName: values["gatheringName"],
+            },
         {
           headers: { Authorization: `Bearer ${currentUser.accessToken}` },
         }
       )
       .then((res) => {
-        setTimeout(() => {
-          queryClient.invalidateQueries(["gatherings"]);
-          successMessage("Add successful");
-          setLoading(false);
-          closeFormModal();
-        }, 1000);
+        if (res.data.status === "Success") {
+          setTimeout(() => {
+            queryClient.invalidateQueries(["gatherings"]);
+            successMessage(`${type} successful`);
+            closeFormModal();
+          }, 1000);
+        } else if (res.data.message === "LEADER_OF_COMMODITY_GATHERING_USED") {
+          errorMessage("Leader of commodity used.");
+        }
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -69,12 +81,15 @@ const FormGatheringModal = ({ closeFormModal }) => {
       <div className="form-gathering-container">
         <form className="form-gathering-form" onSubmit={handleAddNewGathering}>
           <div className="form-gathering-form-group">
-            <button
-              className="form-gathering-assign"
-              onClick={() => setOpenListAssign(true)}
-            >
-              Assign leader
-            </button>
+            {type === "Add" && (
+              <button
+                className="form-gathering-assign"
+                onClick={() => setOpenListAssign(true)}
+                type="button"
+              >
+                Assign leader
+              </button>
+            )}
             {openListAssign && (
               <div className="form-gathering-list-leader">
                 {isLoading ? (
@@ -89,7 +104,7 @@ const FormGatheringModal = ({ closeFormModal }) => {
                       className="form-gathering-list-item"
                       key={i}
                       onClick={() => {
-                        setLeaderId(u.id);
+                        setLeaderId(u.userId);
                         setOpenListAssign(false);
                       }}
                     >

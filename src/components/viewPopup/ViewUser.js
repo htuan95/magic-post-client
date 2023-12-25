@@ -13,7 +13,7 @@ const ViewUser = ({ closeVisible, user }) => {
     <div class="view-popup">
       {loading && <Loading />}
       <div className="view-popup-container">
-        <h2 className="view-popup-title">User information</h2>
+        <h2 className="view-popup-title">Details information</h2>
 
         <table className="view-popup-details">
           <tr className="view-popup-item">

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import makeRequest from "../../../services/makeRequest";
 import { AuthContext } from "../../../context/AuthContext";
 import { GetLeaders } from "../../../services/getReq";
@@ -9,8 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import "./confirmReceivedItem.scss";
 
 const ConfirmReceivedItem = ({ closeFormModal }) => {
-  const { successMessage, errorMessage, setCurrentUser, currentUser } =
-    useContext(AuthContext);
+  const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
     itemDescription: "",
@@ -60,7 +59,6 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
   };
 
   // get list exchange
-
   const [openExchange, setOpenExchange] = useState(false);
   const [openUserSend, setOpenUserSend] = useState(false);
   const [openUserReceive, setOpenUserReceive] = useState(false);
@@ -68,19 +66,36 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
 
+  const [pageUserSent, setPageUserSent] = useState(0);
+  const [totalPageUserSent, setTotalPageUserSent] = useState(0);
+
+  const [pageUserReceive, setPageUserReceive] = useState(0);
+  const [totalPageUserReceive, setTotalPageUserReceive] = useState(0);
+
   const prevPage = () => {
-    page > 0 && setPage(page - 1);
+    if (openExchange) {
+      page > 0 && setPage(page - 1);
+    } else if (openUserSend) {
+      pageUserSent > 0 && setPageUserSent(pageUserSent - 1);
+      handleFilterUser(pageUserSent);
+    } else if (openUserReceive) {
+      pageUserReceive > 0 && setPageUserReceive(pageUserReceive - 1);
+      handleFilterUser(pageUserReceive);
+    }
   };
 
   const nextPage = () => {
-    page + 1 < totalPage && setPage(page + 1);
+    if (openExchange) {
+      page + 1 < totalPage && setPage(page + 1);
+    } else if (openUserSend) {
+      pageUserSent + 1 < totalPageUserSent && setPageUserSent(pageUserSent + 1);
+    } else if (openUserReceive) {
+      pageUserReceive + 1 < totalPageUserReceive &&
+        setPageUserReceive(pageUserReceive + 1);
+    }
   };
 
-  const {
-    isLoading: loadingExchange,
-    data: dataExchange,
-    error: errorExchange,
-  } = useQuery({
+  const { isLoading, data, error } = useQuery({
     queryKey: ["exchanges", page],
     queryFn: () =>
       makeRequest
@@ -92,6 +107,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
           }
         )
         .then((res) => {
+          console.log(res.data.data);
           setTotalPage(res.data.pagination.totalPage);
           return res.data.data;
         }),
@@ -101,12 +117,13 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [listUser, setListUser] = useState([]);
-  const handleFilterUser = async (e) => {
+
+  const handleFilterUser = async (page) => {
     setLoading(true);
 
     await makeRequest
       .post(
-        "/listing/get-list-normal-user",
+        `/listing/get-list-normal-user?page=${page}`,
         {
           normalUserEmail: email,
           normalUserName: username,
@@ -117,6 +134,14 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
       )
       .then((res) => {
         setListUser(res.data.data);
+        if (openUserSend) {
+          setTotalPageUserSent(res.data.pagination.totalPage);
+        } else if (openUserReceive) {
+          setTotalPageUserReceive(res.data.pagination.totalPage);
+        }
+        if (listUser.length <= 0) {
+          setMsg("Not have any user match.");
+        }
         setLoading(false);
       })
       .catch((err) => {
@@ -125,33 +150,46 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
       });
   };
 
+  useEffect(() => {}, []);
+
   // users
   const [userSendId, setUserSendId] = useState("");
   const [userReceiveId, setUserReceiveId] = useState("");
 
   // get list users by role
-  const { isLoading, data: users, error } = GetLeaders("users", "USER_NORMAL");
+  const [msg, setMsg] = useState("");
 
   return (
     <div class="confirm-item">
-      {loading && <Loading />}
       <div className="confirm-item-container">
         <form className="confirm-item-form" onSubmit={confirmReceivedItem}>
           <div className="confirm-item-form-group">
             <div className="confirm-item-list-btn">
               <button
-                className="confirm-item-assign"
+                className={
+                  openExchange
+                    ? "confirm-item-assign active"
+                    : "confirm-item-assign"
+                }
                 type="button"
                 onClick={() => {
                   setOpenExchange(true);
                   setOpenUserSend(false);
                   setOpenUserReceive(false);
+                  setUsername("");
+                  setEmail("");
+                  setListUser([]);
+                  setMsg("");
                 }}
               >
                 Choose exchange
               </button>
               <button
-                className="confirm-item-assign"
+                className={
+                  openUserSend
+                    ? "confirm-item-assign active"
+                    : "confirm-item-assign"
+                }
                 type="button"
                 onClick={() => {
                   setOpenUserSend(true);
@@ -159,18 +197,26 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                   setOpenUserReceive(false);
                 }}
               >
-                Choose user send
+                Chose sent user
               </button>
               <button
-                className="confirm-item-assign"
+                className={
+                  openUserReceive
+                    ? "confirm-item-assign active"
+                    : "confirm-item-assign"
+                }
                 type="button"
                 onClick={() => {
                   setOpenUserReceive(true);
                   setOpenUserSend(false);
                   setOpenExchange(false);
+                  setUsername("");
+                  setEmail("");
+                  setListUser([]);
+                  setMsg("");
                 }}
               >
-                Choose receive
+                Chose received user
               </button>
             </div>
 
@@ -194,24 +240,31 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                   <button
                     type="button"
                     className="confirm-item-list-user-send-find"
-                    onClick={handleFilterUser}
+                    onClick={() => handleFilterUser(pageUserSent)}
                   >
                     Find
                   </button>
                 </div>
                 {loading ? (
                   <Loading />
-                ) : error ? (
-                  errorMessage("Something went wrong")
-                ) : listUser?.length === 0 ? (
-                  <p>Not have any users</p>
+                ) : listUser?.length <= 0 ? (
+                  <p
+                    style={{
+                      textAlign: "center",
+                      color: "red",
+                      marginTop: "20px",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {msg}
+                  </p>
                 ) : (
                   listUser?.map((u, i) => (
                     <div
                       className="confirm-item-list-item"
                       key={i}
                       onClick={() => {
-                        setUserSendId(u.id);
+                        setUserSendId(u.userId);
                         setOpenUserSend(false);
                       }}
                     >
@@ -221,7 +274,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                     </div>
                   ))
                 )}
-                {totalPage > 0 && (
+                {totalPageUserSent > 0 && (
                   <div class="pagination confirm-item-p">
                     <button
                       className="pagination-btn prev-btn confirm-item-p"
@@ -231,7 +284,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                       Prev
                     </button>
                     <p className="pagination-current confirm-item-p">
-                      {page + 1} / {totalPage}
+                      {pageUserSent + 1} / {totalPageUserSent}
                     </p>
                     <button
                       className="pagination-btn next-btn confirm-item-p"
@@ -249,6 +302,10 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                     setOpenUserSend(false);
                     setOpenUserReceive(false);
                     setPage(0);
+                    setUsername("");
+                    setEmail("");
+                    setListUser([]);
+                    setMsg("");
                   }}
                 >
                   <AiOutlineClose />
@@ -276,24 +333,31 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                   <button
                     type="button"
                     className="confirm-item-list-user-send-find"
-                    onClick={handleFilterUser}
+                    onClick={() => handleFilterUser(pageUserReceive)}
                   >
                     Find
                   </button>
                 </div>
                 {loading ? (
                   <Loading />
-                ) : error ? (
-                  errorMessage("Something went wrong")
-                ) : listUser?.length === 0 ? (
-                  <p>Not have any users</p>
+                ) : listUser?.length <= 0 ? (
+                  <p
+                    style={{
+                      textAlign: "center",
+                      color: "red",
+                      marginTop: "20px",
+                      fontSize: "14px",
+                    }}
+                  >
+                    {msg}
+                  </p>
                 ) : (
                   listUser?.map((u, i) => (
                     <div
                       className="confirm-item-list-item"
                       key={i}
                       onClick={() => {
-                        setUserReceiveId(u.id);
+                        setUserReceiveId(u.userId);
                         setOpenUserReceive(false);
                       }}
                     >
@@ -303,7 +367,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                     </div>
                   ))
                 )}
-                {totalPage > 0 && (
+                {totalPageUserReceive > 0 && (
                   <div class="pagination confirm-item-p">
                     <button
                       className="pagination-btn prev-btn confirm-item-p"
@@ -313,7 +377,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                       Prev
                     </button>
                     <p className="pagination-current confirm-item-p">
-                      {page + 1} / {totalPage}
+                      {pageUserSent + 1} / {totalPageUserSent}
                     </p>
                     <button
                       className="pagination-btn next-btn confirm-item-p"
@@ -331,6 +395,10 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                     setOpenUserSend(false);
                     setOpenUserReceive(false);
                     setPage(0);
+                    setUsername("");
+                    setEmail("");
+                    setListUser([]);
+                    setMsg("");
                   }}
                 >
                   <AiOutlineClose />
@@ -344,10 +412,10 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                   <Loading />
                 ) : error ? (
                   errorMessage("Something went wrong")
-                ) : dataExchange?.length === 0 ? (
+                ) : data?.length <= 0 ? (
                   <p>Not have any exchange</p>
                 ) : (
-                  dataExchange?.map((u, i) => (
+                  data?.map((u, i) => (
                     <div
                       className="confirm-item-list-item"
                       key={i}
@@ -425,7 +493,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
               </div>
             ))}
             <div className="confirm-item-input-controller">
-              <p className="confirm-item-input-label">User send: </p>
+              <p className="confirm-item-input-label">User sent: </p>
               <input
                 type="text"
                 placeholder="User send"
@@ -437,7 +505,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
               />
             </div>
             <div className="confirm-item-input-controller">
-              <p className="confirm-item-input-label">User receive: </p>
+              <p className="confirm-item-input-label">User received: </p>
               <input
                 type="text"
                 placeholder="User receive"

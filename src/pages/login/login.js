@@ -27,13 +27,17 @@ const Login = () => {
     await makeRequest
       .post("/user/login", values)
       .then((res) => {
-        setTimeout(() => {
-          setCurrentUser(res.data.data);
-          successMessage("Login successful");
-          setLoading(false);
-          
-          navigate("/home");
-        }, 1000);
+        if (res.data.status === "Success") {
+          setTimeout(() => {
+            setCurrentUser(res.data.data);
+            successMessage("Login successful");
+
+            navigate("/home");
+          }, 1000);
+        } else {
+          errorMessage("Incorrect email or password");
+        }
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);

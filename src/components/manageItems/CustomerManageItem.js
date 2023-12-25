@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import "./manageExchange.scss";
+import "./manageItem.scss";
 import { MdOutlineAdd } from "react-icons/md";
 import FilterExchange from "../filterPopup/FilterExchange";
 import Table from "../table/Table";
@@ -9,8 +9,10 @@ import makeRequest from "../../services/makeRequest";
 import Loading from "../loading/loading";
 import FormExchangeModal from "../formModal/FormExchangeModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import TableItem from "../table/TableItem";
+import ConfirmReceivedItem from "../exchangeController/confirmReceivedItem/ConfirmReceivedItem";
 
-const ManageExchange = () => {
+const CustomerManageItem = () => {
   const { currentUser, errorMessage } = useContext(AuthContext);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isFilterExchange, setIsFilterExchange] = useState(false);
@@ -24,11 +26,11 @@ const ManageExchange = () => {
   const openFilterExchange = () => setIsFilterExchange(true);
   // close filter exchange
   const closeFilterExchange = () => setIsFilterExchange(false);
-  
+
   // Handle filters exchange
-  const [currentExchange, setCurrentExchange] = useState([]);
+  const [currentItem, setCurrentItem] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
-  const getFilterExchange = (data) => setCurrentExchange(data);
+  const getFilterExchange = (data) => setCurrentItem(data);
 
   const queryClient = useQueryClient();
 
@@ -43,58 +45,42 @@ const ManageExchange = () => {
     page + 1 < totalPage && setPage(page + 1);
   };
 
+  const itemLocationType =
+    currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE"
+      ? "EXCHANGE"
+      : "GATHERING";
+
   const { isLoading, data, error } = useQuery({
-    queryKey: ["exchanges", page],
+    queryKey: ["customer-items", page],
     queryFn: () =>
       makeRequest
         .post(
-          `/listing/get-list-exchange?page=${page}`,
+          `/customer/get-list-sent-item-by-customer`,
           {},
           {
             headers: { Authorization: `Bearer ${currentUser.accessToken}` },
           }
         )
         .then((res) => {
+          console.log(res.data);
           setTotalPage(res.data.pagination.totalPage);
           return res.data.data;
         }),
   });
 
+  
+
   return (
-    <div className="manage-exchange">
-      <div className="manage-exchange-container">
-        <div className="manage-exchange-header">
-          <h2 className="manage-exchange-title">Exchange management</h2>
-          <div className="manage-exchange-actions">
-            {isFiltering ? (
-              <button
-                className="manage-exchange-filter"
-                onClick={() => {
-                  setIsFiltering(false);
-                  queryClient.invalidateQueries(["exchanges"]);
-                }}
-              >
-                Remove Filter
-              </button>
-            ) : (
-              <button
-                className="manage-exchange-filter"
-                onClick={openFilterExchange}
-              >
-                Filter
-              </button>
-            )}
-            <button className="btn-add" onClick={openFormModal}>
-              <p>Add new exchange</p>
-              <MdOutlineAdd />
-            </button>
-          </div>
+    <div className="manage-item">
+      <div className="manage-item-container">
+        <div className="manage-item-header">
+          <h2 className="manage-item-title">Items management</h2>
         </div>
-        <Table
-          name="Exchange"
-          dataExchange={data}
+        <TableItem
+          name="Item"
+          dataItem={data}
           isFiltering={isFiltering}
-          currentExchange={currentExchange}
+          currentItem={currentItem}
         />
       </div>
 
@@ -103,6 +89,7 @@ const ManageExchange = () => {
         <div class="pagination">
           <button
             className="pagination-btn prev-btn"
+            // disabled={page < 1}
             onClick={prevPage}
           >
             Prev
@@ -112,24 +99,15 @@ const ManageExchange = () => {
           </p>
           <button
             className="pagination-btn next-btn"
+            // disabled={page + 1 < totalPage}
             onClick={nextPage}
           >
             Next
           </button>
         </div>
       )}
-
-      {isOpenModal && <FormExchangeModal closeFormModal={closeFormModal} item={{}}/>}
-
-      {isFilterExchange && (
-        <FilterExchange
-          closeFilterExchange={closeFilterExchange}
-          getFilterExchange={getFilterExchange}
-          setIsFiltering={setIsFiltering}
-        />
-      )}
     </div>
   );
 };
 
-export default ManageExchange;
+export default CustomerManageItem;

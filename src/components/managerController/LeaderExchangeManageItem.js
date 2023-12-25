@@ -32,12 +32,19 @@ const LeaderExchangeManageItem = () => {
     page + 1 < totalPage && setPage(page + 1);
   };
 
+  const itemLocationType =
+    currentUser.role === "LEADER_OF_COMMODITY_EXCHANGE"
+      ? "EXCHANGE"
+      : "GATHERING";
+
+  console.log(itemLocationType);
+
   const { isLoading, data, error } = useQuery({
-    queryKey: ["items", page, itemStatus],
+    queryKey: ["items", page, itemLocationType],
     queryFn: () =>
       makeRequest
         .post(
-          `/listing/get-list-item-in-exchange-or-gathering?itemLocationType="EXCHANGE"&itemStatus=${itemStatus}&page=${page}`,
+          `/listing/get-list-item-in-exchange-or-gathering?itemLocationType=${itemLocationType}&page=${page}`,
           {},
           {
             headers: { Authorization: `Bearer ${currentUser.accessToken}` },
@@ -48,32 +55,12 @@ const LeaderExchangeManageItem = () => {
           return res.data.data;
         }),
   });
+
   return (
     <div className="main-table">
       <div className="main-table-container">
         <div className="main-table-top">
           <h2 className="main-table-title">Items management</h2>
-          <div className="main-table-top-actions">
-            <select
-              name="roles"
-              id="roles"
-              className="main-table-roles"
-              onChange={(e) => onChangeItemStatus(e)}
-            >
-              <option
-                className="main-table-role-option"
-                value="USER_RECEIVED_SUCCESSFUL"
-              >
-                USER_RECEIVED_SUCCESSFUL
-              </option>
-              <option
-                className="main-table-role-option"
-                value="USER_RECEIVED_FAILED"
-              >
-                USER_RECEIVED_FAILED
-              </option>
-            </select>
-          </div>
         </div>
         <TableItem
           name="Item"
@@ -85,21 +72,13 @@ const LeaderExchangeManageItem = () => {
       {/* <Pagination /> */}
       {totalPage > 0 && (
         <div class="pagination">
-          <button
-            className="pagination-btn prev-btn"
-            // disabled={page < 1}
-            onClick={prevPage}
-          >
+          <button className="pagination-btn prev-btn" onClick={prevPage}>
             Prev
           </button>
           <p className="pagination-current">
             {page + 1} / {totalPage}
           </p>
-          <button
-            className="pagination-btn next-btn"
-            // disabled={page + 1 < totalPage}
-            onClick={nextPage}
-          >
+          <button className="pagination-btn next-btn" onClick={nextPage}>
             Next
           </button>
         </div>

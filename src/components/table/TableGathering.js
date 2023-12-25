@@ -10,6 +10,8 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import PopupOptions from "../popup/Popup";
+import ViewGathering from "../viewPopup/ViewGathering";
+import FormGatheringModal from "../formModal/FormGatheringModal";
 
 const TableGathering = ({
   name,
@@ -57,6 +59,11 @@ const TableGathering = ({
   const [openPopupDelete, setOpenPopupDelete] = useState(false);
   const [idItemDelete, setIdItemDelete] = useState("");
 
+  const [openViewGathering, setOpenViewGathering] = useState(false);
+  const [itemSelected, setItemSelected] = useState({});
+
+  const [openEdit, setOpenEdit] = useState(false);
+
   return (
     <div class="gathering-box">
       {/* {isLoading && <Loading />} */}
@@ -98,8 +105,20 @@ const TableGathering = ({
               <p>{getStrings(item.exchangeLeaderId)}</p>
             </div>
             <div class="gathering-cell gathering-actions">
-              <MdOutlineRemoveRedEye className="gathering-actions-icon add" />
-              <MdOutlineEdit className="gathering-actions-icon edit" />
+              <MdOutlineRemoveRedEye
+                className="gathering-actions-icon add"
+                onClick={() => {
+                  setItemSelected(item);
+                  setOpenViewGathering(true);
+                }}
+              />
+              <MdOutlineEdit
+                className="gathering-actions-icon edit"
+                onClick={() => {
+                  setItemSelected(item);
+                  setOpenEdit(true);
+                }}
+              />
               <MdOutlineDelete
                 className="gathering-actions-icon delete"
                 onClick={() => {
@@ -129,8 +148,20 @@ const TableGathering = ({
               <p>{getStrings(item.gatheringLeaderId)}</p>
             </div>
             <div class="gathering-cell gathering-actions">
-              <MdOutlineRemoveRedEye className="gathering-actions-icon add" />
-              <MdOutlineEdit className="gathering-actions-icon edit" />
+              <MdOutlineRemoveRedEye
+                className="gathering-actions-icon add"
+                onClick={() => {
+                  setItemSelected(item);
+                  setOpenViewGathering(true);
+                }}
+              />
+              <MdOutlineEdit
+                className="gathering-actions-icon edit"
+                onClick={() => {
+                  setItemSelected(item);
+                  setOpenEdit(true);
+                }}
+              />
               <MdOutlineDelete
                 className="gathering-actions-icon delete"
                 onClick={() => {
@@ -148,6 +179,20 @@ const TableGathering = ({
           handleAction={() => handleRemoveItem(idItemDelete)}
           loading={loading}
           setOpenPopup={setOpenPopupDelete}
+        />
+      )}
+
+      {openViewGathering && (
+        <ViewGathering
+          item={itemSelected}
+          closeVisible={() => setOpenViewGathering(false)}
+        />
+      )}
+
+      {openEdit && (
+        <FormGatheringModal
+          item={itemSelected}
+          closeFormModal={() => setOpenEdit(false)}
         />
       )}
     </div>

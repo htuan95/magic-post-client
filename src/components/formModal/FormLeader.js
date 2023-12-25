@@ -1,15 +1,13 @@
 import "./formUser.css";
-import { useNavigate, Link } from "react-router-dom";
 import { useContext, useState } from "react";
 import makeRequest from "../../services/makeRequest";
 import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import { AiOutlineClose } from "react-icons/ai";
-import { inputExchange, inputRegister } from "../../helpers/inputHelpers";
+import { inputRegister } from "../../helpers/inputHelpers";
 
 const FormLeader = ({ closeFormModal }) => {
-  const { successMessage, errorMessage, setCurrentUser, currentUser } =
-    useContext(AuthContext);
+  const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
     name: "",
@@ -26,7 +24,7 @@ const FormLeader = ({ closeFormModal }) => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
-  const handleAddNewExchange = async (e) => {
+  const handleCreateLeader = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -36,8 +34,7 @@ const FormLeader = ({ closeFormModal }) => {
       })
       .then((res) => {
         setTimeout(() => {
-          setCurrentUser(res.data.data);
-          successMessage("Add successful");
+          successMessage("Add leader successfully");
           setLoading(false);
           closeFormModal();
         }, 1000);
@@ -53,7 +50,7 @@ const FormLeader = ({ closeFormModal }) => {
     <div class="form-modal-user">
       {loading && <Loading />}
       <div className="form-modal-user-container">
-        <form className="form-modal-user-form" onSubmit={handleAddNewExchange}>
+        <form className="form-modal-user-form" onSubmit={handleCreateLeader}>
           <div className="form-modal-user-form-group">
             <div className="form-modal-user-child">
               {inputRegister.slice(0, 4).map((item, index) => (

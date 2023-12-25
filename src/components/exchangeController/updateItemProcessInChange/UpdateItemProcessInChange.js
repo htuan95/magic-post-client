@@ -7,7 +7,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import "./updateItemProcessInChange.scss";
 
 const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
-  const { successMessage, errorMessage, setCurrentUser, currentUser } =
+  const { successMessage, errorMessage, currentUser } =
     useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
@@ -18,6 +18,16 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
   const updateItemProcess = async (e) => {
     e.preventDefault();
     setLoading(true);
+
+    if (
+      exchangeId.length <= 0 &&
+      gatheringId.length <= 0 &&
+      (userReceivedStatus === "" || userReceivedStatus === "NONE")
+    ) {
+      errorMessage("Please provide the next exchange or gathering!");
+      setLoading(false);
+      return;
+    }
 
     await makeRequest
       .post(
@@ -34,10 +44,14 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
         }
       )
       .then((res) => {
-        successMessage("Update item successful");
-        queryClient.invalidateQueries({ queryKey: ["items"] });
+        if (res.data.status === "Success") {
+          successMessage("Update item successful");
+          queryClient.invalidateQueries({ queryKey: ["items"] });
+          closeFormModal();
+        } else {
+          errorMessage("Something went wrong...");
+        }
         setLoading(false);
-        closeFormModal();
       })
       .catch((err) => {
         console.log(err);
@@ -121,6 +135,7 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
                   onClick={() => {
                     setOpenExchange(true);
                     setOpenGathering(false);
+                    setGatheringId("");
                   }}
                 >
                   Choose exchange
@@ -132,6 +147,7 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
                 onClick={() => {
                   setOpenGathering(true);
                   setOpenExchange(false);
+                  setExchangeId("");
                 }}
               >
                 Choose gathering
@@ -254,30 +270,35 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
               </div>
             )}
 
-            {currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
+            {currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" &&
+              exchangeId.length > 0 && (
+                <div className="update-process-change-input-controller">
+                  <p className="update-process-change-input-label">
+                    Exchange:{" "}
+                  </p>
+                  <input
+                    type="text"
+                    placeholder="Exchange"
+                    className="update-process-change-input"
+                    name="exchangeId"
+                    value={exchangeId}
+                    onChange={() => {}}
+                  />
+                </div>
+              )}
+            {gatheringId.length > 0 && (
               <div className="update-process-change-input-controller">
-                <p className="update-process-change-input-label">Exchange: </p>
+                <p className="update-process-change-input-label">Gathering: </p>
                 <input
                   type="text"
-                  placeholder="Exchange"
+                  placeholder="Gathering ID"
                   className="update-process-change-input"
-                  name="exchangeId"
-                  value={exchangeId}
+                  name="gatheringId"
+                  value={gatheringId}
                   onChange={() => {}}
                 />
               </div>
             )}
-            <div className="update-process-change-input-controller">
-              <p className="update-process-change-input-label">Gathering: </p>
-              <input
-                type="text"
-                placeholder="Gathering ID"
-                className="update-process-change-input"
-                name="gatheringId"
-                value={gatheringId}
-                onChange={() => {}}
-              />
-            </div>
             <div className="update-process-change-input-controller">
               <p className="update-process-change-input-label">Item: </p>
               <input

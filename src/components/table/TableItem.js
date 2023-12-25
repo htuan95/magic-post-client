@@ -13,6 +13,7 @@ import PopupOptions from "../popup/Popup";
 import UpdateItemProcessInChange from "../exchangeController/updateItemProcessInChange/UpdateItemProcessInChange";
 import ItemProcess from "../exchangeController/itemProcess/ItemProcess";
 import ViewItem from "../viewPopup/ViewItem";
+import ViewItemCustomer from "../viewPopup/ViewItemCustomer";
 
 const TableItem = ({ isFiltering, dataItem, currentItem }) => {
   const getStrings = (s) =>
@@ -23,36 +24,36 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
 
-  const mutation = useMutation({
-    mutationFn: async (exchangeId) => {
-      setLoading(true);
-      await makeRequest
-        .post(
-          `/manager/delete-exchange?exchangeId=${exchangeId}`,
-          {},
-          {
-            headers: { Authorization: `Bearer ${currentUser.accessToken}` },
-          }
-        )
-        .then((res) => {
-          successMessage("Item deleted.");
-          setLoading(false);
-        })
-        .catch(() => {
-          errorMessage("Something went wrong...");
-          setLoading(false);
-        });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["exchanges"] });
-    },
-  });
+  // const mutation = useMutation({
+  //   mutationFn: async (exchangeId) => {
+  //     setLoading(true);
+  //     await makeRequest
+  //       .post(
+  //         `/manager/delete-exchange?exchangeId=${exchangeId}`,
+  //         {},
+  //         {
+  //           headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+  //         }
+  //       )
+  //       .then((res) => {
+  //         successMessage("Item deleted.");
+  //         setLoading(false);
+  //       })
+  //       .catch(() => {
+  //         errorMessage("Something went wrong...");
+  //         setLoading(false);
+  //       });
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["exchanges"] });
+  //   },
+  // });
 
-  const handleRemoveItem = async (exchangeId) => {
-    await mutation.mutateAsync(exchangeId);
-  };
+  // const handleRemoveItem = async (exchangeId) => {
+  //   await mutation.mutateAsync(exchangeId);
+  // };
 
-  const [openPopupDelete, setOpenPopupDelete] = useState(false);
+  // const [openPopupDelete, setOpenPopupDelete] = useState(false);
   const [idItemDelete, setIdItemDelete] = useState("");
 
   // update item
@@ -120,27 +121,34 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
             </div>
             <div class="table-item-cell last-cell table-item-actions">
               {/* <MdOutlineRemoveRedEye className="table-item-actions-icon add" /> */}
-              {currentUser.role === "MANAGER" ? (
+              {(currentUser.role === "MANAGER" ||
+                currentUser.role === "LEADER_OF_COMMODITY_EXCHANGE" ||
+                currentUser.role === "LEADER_OF_COMMODITY_GATHERING" ||
+                currentUser.role === "USER_NORMAL") && (
                 <button
                   className="table-item-btn details"
                   onClick={() => {
                     setItemSelected(item);
+                    setListItemProcess(item.itemProcess);
                     setOpenDetailItem(true);
                   }}
                 >
                   Details
                 </button>
-              ) : (
-                <>
-                  <button
-                    className="table-item-btn process"
-                    onClick={() => {
-                      setListItemProcess(item.itemProcess);
-                      setOpenProcessItem(true);
-                    }}
-                  >
-                    Process
-                  </button>
+              )}
+              <button
+                className="table-item-btn process"
+                onClick={() => {
+                  setListItemProcess(item.itemProcess);
+                  setOpenProcessItem(true);
+                }}
+              >
+                Process
+              </button>
+              {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
+                currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
+                currentUser.role !== "MANAGER" &&
+                currentUser.role !== "USER_NORMAL" && (
                   <button
                     className="table-item-btn update"
                     onClick={() => {
@@ -150,8 +158,7 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
                   >
                     Update
                   </button>
-                </>
-              )}
+                )}
               {/* <MdOutlineEdit className="table-item-actions-icon edit" />
               <MdOutlineDelete
                 className="table-item-actions-icon delete"
@@ -188,7 +195,10 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
               <p>{getStrings(item.itemStatus)}</p>
             </div>
             <div class="table-item-cell last-cell table-item-actions">
-              {currentUser.role === "MANAGER" ? (
+              {(currentUser.role === "MANAGER" ||
+                currentUser.role === "LEADER_OF_COMMODITY_EXCHANGE" ||
+                currentUser.role === "LEADER_OF_COMMODITY_GATHERING" ||
+                currentUser.role === "USER_NORMAL") && (
                 <button
                   className="table-item-btn details"
                   onClick={() => {
@@ -198,17 +208,23 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
                 >
                   Details
                 </button>
-              ) : (
-                <>
-                  <button
-                    className="table-item-btn process"
-                    onClick={() => {
-                      setListItemProcess(item.itemProcess);
-                      setOpenProcessItem(true);
-                    }}
-                  >
-                    Process
-                  </button>
+              )}
+
+              {/* {currentUser.role !== "USER_NORMAL" && ( */}
+              <button
+                className="table-item-btn process"
+                onClick={() => {
+                  setListItemProcess(item.itemProcess);
+                  setOpenProcessItem(true);
+                }}
+              >
+                Process
+              </button>
+              {/* )} */}
+              {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
+                currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
+                currentUser.role !== "MANAGER" &&
+                currentUser.role !== "USER_NORMAL" && (
                   <button
                     className="table-item-btn update"
                     onClick={() => {
@@ -218,20 +234,19 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
                   >
                     Update
                   </button>
-                </>
-              )}
+                )}
             </div>
           </div>
         ))
       )}
-      {openPopupDelete && (
+      {/* {openPopupDelete && (
         <PopupOptions
           title="Delete exchange"
           handleAction={() => handleRemoveItem(idItemDelete)}
           loading={loading}
           setOpenPopup={setOpenPopupDelete}
         />
-      )}
+      )} */}
 
       {openUpdateItem && (
         <UpdateItemProcessInChange
@@ -247,8 +262,15 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
         />
       )}
 
-      {openDetailItem && (
+      {openDetailItem && currentUser.role !== "USER_NORMAL" && (
         <ViewItem
+          item={itemSelected}
+          closeVisible={() => setOpenDetailItem(false)}
+        />
+      )}
+
+      {openDetailItem && currentUser.role === "USER_NORMAL" && (
+        <ViewItemCustomer
           item={itemSelected}
           closeVisible={() => setOpenDetailItem(false)}
         />

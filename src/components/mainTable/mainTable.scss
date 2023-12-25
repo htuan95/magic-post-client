@@ -36,10 +36,18 @@
           }
         }
 
-        .main-table-roles {
-          width: 80px;
-          .main-table-role-option {
-            height: 40px;
+        .main-table-select-option {
+          .main-table-roles {
+            width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            padding: 10px;
+            border-radius: 0.25rem;
+            border: none;
+            color: #000;
+            cursor: pointer;
+            .main-table-role-option {
+            }
           }
         }
 

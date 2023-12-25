@@ -10,6 +10,9 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import PopupOptions from "../popup/Popup";
+import ViewItem from "../viewPopup/ViewItem";
+import ViewExchange from "../viewPopup/ViewExchange";
+import FormExchangeModal from "../formModal/FormExchangeModal";
 
 const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
   const getStrings = (s) =>
@@ -52,6 +55,11 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
   const [openPopupDelete, setOpenPopupDelete] = useState(false);
   const [idItemDelete, setIdItemDelete] = useState("");
 
+  const [openViewExchange, setOpenViewExchange] = useState(false);
+  const [itemSelected, setItemSelected] = useState({});
+
+  const [openEdit, setOpenEdit] = useState(false);
+
   return (
     <div class="table-box">
       {/* {isLoading && <Loading />} */}
@@ -93,8 +101,20 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
               <p>{getStrings(item.exchangeLeaderId)}</p>
             </div>
             <div class="table-cell table-actions">
-              <MdOutlineRemoveRedEye className="table-actions-icon add" />
-              <MdOutlineEdit className="table-actions-icon edit" />
+              <MdOutlineRemoveRedEye
+                className="table-actions-icon add"
+                onClick={() => {
+                  setItemSelected(item);
+                  setOpenViewExchange(true);
+                }}
+              />
+              <MdOutlineEdit
+                className="table-actions-icon edit"
+                onClick={() => {
+                  setItemSelected(item);
+                  setOpenEdit(true);
+                }}
+              />
               <MdOutlineDelete
                 className="table-actions-icon delete"
                 onClick={() => {
@@ -124,8 +144,20 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
               <p>{getStrings(item.exchangeLeaderId)}</p>
             </div>
             <div class="table-cell table-actions">
-              <MdOutlineRemoveRedEye className="table-actions-icon add" />
-              <MdOutlineEdit className="table-actions-icon edit" />
+              <MdOutlineRemoveRedEye
+                className="table-actions-icon add"
+                onClick={() => {
+                  setItemSelected(item);
+                  setOpenViewExchange(true);
+                }}
+              />
+              <MdOutlineEdit
+                className="table-actions-icon edit"
+                onClick={() => {
+                  setItemSelected(item);
+                  setOpenEdit(true);
+                }}
+              />
               <MdOutlineDelete
                 className="table-actions-icon delete"
                 onClick={() => {
@@ -143,6 +175,19 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
           handleAction={() => handleRemoveItem(idItemDelete)}
           loading={loading}
           setOpenPopup={setOpenPopupDelete}
+        />
+      )}
+      {openViewExchange && (
+        <ViewExchange
+          item={itemSelected}
+          closeVisible={() => setOpenViewExchange(false)}
+        />
+      )}
+
+      {openEdit && (
+        <FormExchangeModal
+          item={itemSelected}
+          closeFormModal={() => setOpenEdit(false)}
         />
       )}
     </div>

@@ -21,12 +21,18 @@ const Home = () => {
   //     setIsPage401(true);
   //   }
   // }, [errorPage]);
-  const [selectedMenu, setSelectedMenu] = useState(
-    currentUser.role ===
-      ("EMPLOYEE_OF_COMMODITY_GATHERING" || "EMPLOYEE_OF_COMMODITY_EXCHANGE")
-      ? "Items"
-      : "User"
-  );
+  const [selectedMenu, setSelectedMenu] = useState("");
+  useEffect(() => {
+    if (currentUser.role === "USER_NORMAL") {
+      setSelectedMenu("Items");
+    } else if (currentUser.role === "EMPLOYEE_OF_COMMODITY_GATHERING") {
+      setSelectedMenu("Items");
+    } else if (currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE") {
+      setSelectedMenu("Items");
+    } else {
+      setSelectedMenu("User");
+    }
+  }, [currentUser.role]);
   const onChangeMenu = (selectedMenu) => {
     setSelectedMenu(selectedMenu);
   };

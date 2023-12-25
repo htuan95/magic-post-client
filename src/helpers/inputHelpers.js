@@ -71,14 +71,14 @@ export const inputExchange = [
 
 export const inputFilterExchange = [
   {
-    name: "exchangeAddress",
-    type: "text",
-    placeholder: "Exchange address",
-  },
-  {
     name: "exchangeName",
     type: "text",
     placeholder: "Exchange name",
+  },
+  {
+    name: "exchangeAddress",
+    type: "text",
+    placeholder: "Exchange address",
   },
 ];
 

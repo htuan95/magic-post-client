@@ -122,7 +122,9 @@ const ManageGathering = () => {
         </div>
       )}
 
-      {isOpenModal && <FormGatheringModal closeFormModal={closeFormModal} />}
+      {isOpenModal && (
+        <FormGatheringModal closeFormModal={closeFormModal} item={{}} />
+      )}
 
       {isFilterGathering && (
         <FilterExchange

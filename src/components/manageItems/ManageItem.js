@@ -22,8 +22,6 @@ const ManageItem = () => {
   // Close modal
   const closeFormModal = () => setIsOpenModal(false);
 
-  // open filter exchange
-  const openFilterExchange = () => setIsFilterExchange(true);
   // close filter exchange
   const closeFilterExchange = () => setIsFilterExchange(false);
 
@@ -67,33 +65,70 @@ const ManageItem = () => {
         }),
   });
 
+  const [itemStatus, setItemStatus] = useState("Select status");
+
+  // const {
+  //   isLoading: loadingStatus,
+  //   data: dataStatus,
+  //   error: errorStatus,
+  // } = useQuery({
+  //   queryKey: ["items", page, itemLocationType, itemStatus],
+  //   queryFn: () =>
+  //     makeRequest
+  //       .get(
+  //         `/listing/get-list-item-exchange-or-gathering?itemLocationType=${itemLocationType}&itemStatus=${itemStatus}&page=${page}`,
+  //         {
+  //           headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+  //         }
+  //       )
+  //       .then((res) => {
+  //         console.log(res.data.data);
+  //         setTotalPage(res.data.pagination.totalPage);
+  //         return res.data.data;
+  //       }),
+  // });
+
   return (
     <div className="manage-item">
       <div className="manage-item-container">
         <div className="manage-item-header">
           <h2 className="manage-item-title">Items management</h2>
           <div className="manage-item-actions">
-            {/* {isFiltering ? (
-              <button
-                className="manage-item-filter"
-                onClick={() => {
-                  setIsFiltering(false);
-                  queryClient.invalidateQueries(["exchanges"]);
-                }}
-              >
-                Remove Filter
-              </button>
-            ) : (
-              <button
-                className="manage-item-filter"
-                onClick={openFilterExchange}
-              >
-                Filter
-              </button>
-            )} */}
-            {currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" && (
+            {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
+              currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
+              currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" && (
+                <div className="main-table-select-option">
+                  <select
+                    name="roles"
+                    id="roles"
+                    className="main-table-roles"
+                    onChange={(e) => setItemStatus(e.target.value)}
+                  >
+                    <option
+                      className="main-table-role-option"
+                      value
+                      style={{ fontSize: "16px" }}
+                    >
+                      Select status
+                    </option>
+                    <option
+                      className="main-table-role-option"
+                      value="USER_RECEIVED_SUCCESSFUL"
+                    >
+                      USER_RECEIVED_SUCCESSFUL
+                    </option>
+                    <option
+                      className="main-table-role-option"
+                      value="USER_RECEIVED_FAILED"
+                    >
+                      USER_RECEIVED_FAILED
+                    </option>
+                  </select>
+                </div>
+              )}
+            {currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
               <button className="btn-add" onClick={openFormModal}>
-                <p>Confirm received item</p>
+                <p>Create new item</p>
                 <MdOutlineAdd />
               </button>
             )}
@@ -130,7 +165,9 @@ const ManageItem = () => {
         </div>
       )}
 
-      {isOpenModal && <ConfirmReceivedItem closeFormModal={closeFormModal} />}
+      {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
+        currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
+        isOpenModal && <ConfirmReceivedItem closeFormModal={closeFormModal} />}
 
       {isFilterExchange && (
         <FilterExchange

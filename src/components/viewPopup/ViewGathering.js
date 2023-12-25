@@ -4,7 +4,7 @@ import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import { AiOutlineClose } from "react-icons/ai";
 
-const ViewItem = ({ closeVisible, item }) => {
+const ViewGathering = ({ closeVisible, item }) => {
   const { successMessage, errorMessage, setCurrentUser } =
     useContext(AuthContext);
   const [loading, setLoading] = useState(false);
@@ -21,24 +21,16 @@ const ViewItem = ({ closeVisible, item }) => {
             <td className="view-popup-info">{item.id}</td>
           </tr>
           <tr className="view-popup-item">
-            <td className="view-popup-label">Name:</td>
-            <td className="view-popup-info">{item.itemName}</td>
+            <td className="view-popup-label">Gathering name:</td>
+            <td className="view-popup-info">{item.gatheringName}</td>
           </tr>
           <tr className="view-popup-item">
-            <td className="view-popup-label">Type:</td>
-            <td className="view-popup-info">{item.itemType}</td>
+            <td className="view-popup-label">Gathering address:</td>
+            <td className="view-popup-info">{item.gatheringAddress}</td>
           </tr>
           <tr className="view-popup-item">
-            <td className="view-popup-label">Mass:</td>
-            <td className="view-popup-info">{item.itemMass}</td>
-          </tr>
-          <tr className="view-popup-item">
-            <td className="view-popup-label">Description:</td>
-            <td className="view-popup-info">{item.itemDescription}</td>
-          </tr>
-          <tr className="view-popup-item">
-            <td className="view-popup-label">Status:</td>
-            <td className="view-popup-info">{item.itemStatus}</td>
+            <td className="view-popup-label">Gathering leader id:</td>
+            <td className="view-popup-info">{item.gatheringLeaderId}</td>
           </tr>
         </table>
       </div>
@@ -47,4 +39,4 @@ const ViewItem = ({ closeVisible, item }) => {
   );
 };
 
-export default ViewItem;
+export default ViewGathering;

@@ -6,9 +6,10 @@ import makeRequest from "../../../services/makeRequest";
 import Loading from "../../loading/loading";
 import { inputRegister } from "../../../helpers/inputHelpers";
 import ViewUser from "../../viewPopup/ViewUser";
+import { useQueryClient } from "@tanstack/react-query";
 
-const FormEmployeeExchange = ({ closeFormModal, role }) => {
-  const { successMessage, errorMessage, setCurrentUser, currentUser } =
+const FormEmployee = ({ closeFormModal, role }) => {
+  const { successMessage, errorMessage, currentUser } =
     useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
@@ -28,10 +29,11 @@ const FormEmployeeExchange = ({ closeFormModal, role }) => {
 
   const [isVisible, setIsVisible] = useState(false);
   const [infoEmployee, setInfoEmployee] = useState({});
-  // open visible
-  const openVisible = () => setIsVisible(true);
+
   // close visible
   const closeVisible = () => setIsVisible(false);
+
+  const queryClient = useQueryClient();
 
   const createNewEmployee = async (e) => {
     e.preventDefault();
@@ -46,6 +48,7 @@ const FormEmployeeExchange = ({ closeFormModal, role }) => {
       })
       .then((res) => {
         setTimeout(() => {
+          queryClient.invalidateQueries(["employee-exchange-gathering"]);
           successMessage("Add successful");
           setLoading(false);
           closeFormModal();
@@ -123,4 +126,4 @@ const FormEmployeeExchange = ({ closeFormModal, role }) => {
   );
 };
 
-export default FormEmployeeExchange;
+export default FormEmployee;

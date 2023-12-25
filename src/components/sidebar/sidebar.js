@@ -3,10 +3,10 @@ import "./sidebar.scss";
 import { Link, useNavigate } from "react-router-dom";
 import PopupOptions from "../popup/Popup";
 import { handleOpenOptions } from "../../helpers";
-import Loading from "../loading/loading";
 import { AuthContext } from "../../context/AuthContext";
 
 const Sidebar = ({ selectedMenu, onChangeMenu }) => {
+  console.log("selectedMenu", selectedMenu);
   const navigate = useNavigate();
   const [openPopup, setOpenPopup] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,7 +31,8 @@ const Sidebar = ({ selectedMenu, onChangeMenu }) => {
 
         <ul className="sidebar-menu">
           {currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" &&
-            currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" && (
+            currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" &&
+            currentUser.role !== "USER_NORMAL" && (
               <li
                 onClick={() => onChangeMenu("User")}
                 className={
@@ -40,13 +41,17 @@ const Sidebar = ({ selectedMenu, onChangeMenu }) => {
                     : "sidebar-item"
                 }
               >
-                User
+                {currentUser.role === "MANAGER" && "Leader"}
+                {(currentUser.role === "LEADER_OF_COMMODITY_GATHERING" ||
+                  currentUser.role === "LEADER_OF_COMMODITY_EXCHANGE") &&
+                  "Employee"}
               </li>
             )}
           {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
             currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
             currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" &&
-            currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
+            currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" &&
+            currentUser.role !== "USER_NORMAL" && (
               <li
                 onClick={() => onChangeMenu("Exchange")}
                 className={
@@ -61,7 +66,8 @@ const Sidebar = ({ selectedMenu, onChangeMenu }) => {
           {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
             currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
             currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" &&
-            currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
+            currentUser.role !== "EMPLOYEE_OF_COMMODITY_EXCHANGE" &&
+            currentUser.role !== "USER_NORMAL" && (
               <li
                 onClick={() => onChangeMenu("Gathering")}
                 className={
@@ -76,7 +82,9 @@ const Sidebar = ({ selectedMenu, onChangeMenu }) => {
           {(currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE" ||
             currentUser.role === "EMPLOYEE_OF_COMMODITY_GATHERING" ||
             currentUser.role === "MANAGER" ||
-            currentUser.role === "LEADER_OF_COMMODITY_EXCHANGE") && (
+            currentUser.role === "LEADER_OF_COMMODITY_EXCHANGE" ||
+            currentUser.role === "LEADER_OF_COMMODITY_GATHERING" ||
+            currentUser.role === "USER_NORMAL") && (
             <li
               onClick={() => onChangeMenu("Items")}
               className={
