@@ -129,6 +129,7 @@ const Table = ({ name, isFiltering, dataExchange, currentExchange }) => {
       {dataExchange?.length <= 0 ? (
         <p></p>
       ) : (
+        !isFiltering &&
         dataExchange?.map((item, index) => (
           <div class="table-row" key={index}>
             <div class="table-cell first-cell">

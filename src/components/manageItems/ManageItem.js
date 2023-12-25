@@ -13,7 +13,7 @@ import TableItem from "../table/TableItem";
 import ConfirmReceivedItem from "../exchangeController/confirmReceivedItem/ConfirmReceivedItem";
 
 const ManageItem = () => {
-  const { currentUser, errorMessage } = useContext(AuthContext);
+  const { currentUser, errorMessage, successMessage } = useContext(AuthContext);
   const [isOpenModal, setIsOpenModal] = useState(false);
   const [isFilterExchange, setIsFilterExchange] = useState(false);
 
@@ -23,12 +23,11 @@ const ManageItem = () => {
   const closeFormModal = () => setIsOpenModal(false);
 
   // close filter exchange
-  const closeFilterExchange = () => setIsFilterExchange(false);
+  const closeFilterItemStatus = () => setIsFilterExchange(false);
 
   // Handle filters exchange
   const [currentItem, setCurrentItem] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
-  const getFilterExchange = (data) => setCurrentItem(data);
 
   const queryClient = useQueryClient();
 
@@ -42,6 +41,8 @@ const ManageItem = () => {
   const nextPage = () => {
     page + 1 < totalPage && setPage(page + 1);
   };
+
+  const [itemStatus, setItemStatus] = useState("Select item status");
 
   const itemLocationType =
     currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE"
@@ -64,29 +65,39 @@ const ManageItem = () => {
           return res.data.data;
         }),
   });
+  const [loading, setLoading] = useState(false);
 
-  const [itemStatus, setItemStatus] = useState("Select status");
+  const fetchItemStatus = async (itemStatus, itemLocationType) => {
+    setPage(0);
+    setTotalPage(0);
+    setIsFiltering(true);
+    setLoading(true);
 
-  // const {
-  //   isLoading: loadingStatus,
-  //   data: dataStatus,
-  //   error: errorStatus,
-  // } = useQuery({
-  //   queryKey: ["items", page, itemLocationType, itemStatus],
-  //   queryFn: () =>
-  //     makeRequest
-  //       .get(
-  //         `/listing/get-list-item-exchange-or-gathering?itemLocationType=${itemLocationType}&itemStatus=${itemStatus}&page=${page}`,
-  //         {
-  //           headers: { Authorization: `Bearer ${currentUser.accessToken}` },
-  //         }
-  //       )
-  //       .then((res) => {
-  //         console.log(res.data.data);
-  //         setTotalPage(res.data.pagination.totalPage);
-  //         return res.data.data;
-  //       }),
-  // });
+    try {
+      await makeRequest
+        .get(
+          `/listing/get-list-item-successful-or-failed?itemStatus=${itemStatus}&itemLocationType=${itemLocationType}&page=${page}`,
+          {
+            headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+          }
+        )
+        .then((res) => {
+          setTimeout(() => {
+            setCurrentItem(res.data.data);
+            setTotalPage(res.data.pagination.totalPage);
+            console.log("item status", res.data);
+            successMessage("Get items successful");
+            setLoading(false);
+            closeFilterItemStatus();
+          }, 500);
+        })
+        .catch((err) => {
+          console.log(err);
+          errorMessage("Something went wrong...");
+          setLoading(false);
+        });
+    } catch (error) {}
+  };
 
   return (
     <div className="manage-item">
@@ -98,32 +109,40 @@ const ManageItem = () => {
               currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
               currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" && (
                 <div className="main-table-select-option">
-                  <select
-                    name="roles"
-                    id="roles"
-                    className="main-table-roles"
-                    onChange={(e) => setItemStatus(e.target.value)}
+                  <button
+                    className="main-table-role-option"
+                    value="EXCHANGER_SENT_TO_USER"
+                    onClick={() =>
+                      fetchItemStatus(
+                        "EXCHANGER_SENT_TO_USER",
+                        "USER_RECEIVED_SUCCESSFUL"
+                      )
+                    }
                   >
-                    <option
-                      className="main-table-role-option"
-                      value
-                      style={{ fontSize: "16px" }}
-                    >
-                      Select status
-                    </option>
-                    <option
-                      className="main-table-role-option"
-                      value="USER_RECEIVED_SUCCESSFUL"
-                    >
-                      USER_RECEIVED_SUCCESSFUL
-                    </option>
-                    <option
-                      className="main-table-role-option"
-                      value="USER_RECEIVED_FAILED"
-                    >
-                      USER_RECEIVED_FAILED
-                    </option>
-                  </select>
+                    EXCHANGER_SENT_TO_USER
+                  </button>
+                  <button
+                    className="main-table-role-option"
+                    value="USER_SENT_TO_EXCHANGE_AGAIN"
+                    onClick={() =>
+                      fetchItemStatus("USER_SENT_TO_EXCHANGE_AGAIN", "EXCHANGE")
+                    }
+                  >
+                    USER_SENT_TO_EXCHANGE_AGAIN
+                  </button>
+                  <button
+                    className="main-table-role-option"
+                    value="USER_SENT_TO_EXCHANGE_AGAIN"
+                    onClick={() => {
+                      setLoading(true);
+                      setIsFiltering(false);
+                      setCurrentItem([]);
+                      queryClient.invalidateQueries(["items"]);
+                      setLoading(false);
+                    }}
+                  >
+                    Remove filter status
+                  </button>
                 </div>
               )}
             {currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
@@ -137,6 +156,7 @@ const ManageItem = () => {
         <TableItem
           name="Item"
           dataItem={data}
+          loading={loading}
           isFiltering={isFiltering}
           currentItem={currentItem}
         />
@@ -145,21 +165,13 @@ const ManageItem = () => {
       {/* <Pagination /> */}
       {totalPage > 0 && (
         <div class="pagination">
-          <button
-            className="pagination-btn prev-btn"
-            // disabled={page < 1}
-            onClick={prevPage}
-          >
+          <button className="pagination-btn prev-btn" onClick={prevPage}>
             Prev
           </button>
           <p className="pagination-current">
             {page + 1} / {totalPage}
           </p>
-          <button
-            className="pagination-btn next-btn"
-            // disabled={page + 1 < totalPage}
-            onClick={nextPage}
-          >
+          <button className="pagination-btn next-btn" onClick={nextPage}>
             Next
           </button>
         </div>
@@ -168,14 +180,6 @@ const ManageItem = () => {
       {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
         currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
         isOpenModal && <ConfirmReceivedItem closeFormModal={closeFormModal} />}
-
-      {isFilterExchange && (
-        <FilterExchange
-          closeFilterExchange={closeFilterExchange}
-          getFilterExchange={getFilterExchange}
-          setIsFiltering={setIsFiltering}
-        />
-      )}
     </div>
   );
 };

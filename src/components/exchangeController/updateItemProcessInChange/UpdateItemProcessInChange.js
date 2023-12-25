@@ -7,15 +7,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import "./updateItemProcessInChange.scss";
 
 const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
-  const { successMessage, errorMessage, currentUser } =
-    useContext(AuthContext);
+  const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
   const queryClient = useQueryClient();
   const [exchangeId, setExchangeId] = useState("");
   const [userReceivedStatus, setUserReceivedStatus] = useState("");
 
-  const updateItemProcess = async (e) => {
+  const updateItemProcessExchange = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -32,6 +31,51 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
     await makeRequest
       .post(
         "/exchange/update-item-process-in-exchange",
+        {
+          exchangeId: exchangeId,
+          itemId: itemId,
+          gatheringId: gatheringId,
+          userReceivedStatus:
+            userReceivedStatus !== "NONE" ? userReceivedStatus : "",
+        },
+        {
+          headers: { Authorization: `Bearer ${currentUser.accessToken}` },
+        }
+      )
+      .then((res) => {
+        if (res.data.status === "Success") {
+          successMessage("Update item successful");
+          queryClient.invalidateQueries({ queryKey: ["items"] });
+          closeFormModal();
+        } else {
+          errorMessage("Something went wrong...");
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        errorMessage("Something went wrong...");
+        setLoading(false);
+      });
+  };
+
+  const updateItemProcessGathering = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    if (
+      exchangeId.length <= 0 &&
+      gatheringId.length <= 0 &&
+      (userReceivedStatus === "" || userReceivedStatus === "NONE")
+    ) {
+      errorMessage("Please provide the next exchange or gathering!");
+      setLoading(false);
+      return;
+    }
+
+    await makeRequest
+      .post(
+        "/gathering/update-item-process-in-gathering",
         {
           exchangeId: exchangeId,
           itemId: itemId,
@@ -124,7 +168,11 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
       <div className="update-process-change-container">
         <form
           className="update-process-change-form"
-          onSubmit={updateItemProcess}
+          onSubmit={
+            currentUser.role === "EMPLOYEE_OF_COMMODITY_GATHERING"
+              ? updateItemProcessGathering
+              : updateItemProcessExchange
+          }
         >
           <div className="update-process-change-form-group">
             <div className="update-process-change-list-btn">

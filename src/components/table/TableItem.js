@@ -15,46 +15,10 @@ import ItemProcess from "../exchangeController/itemProcess/ItemProcess";
 import ViewItem from "../viewPopup/ViewItem";
 import ViewItemCustomer from "../viewPopup/ViewItemCustomer";
 
-const TableItem = ({ isFiltering, dataItem, currentItem }) => {
+const TableItem = ({ loading, isFiltering, dataItem, currentItem }) => {
   const getStrings = (s) =>
     s != null ? (s?.length > 12 ? s?.substr(0, 12) + "..." : s) : "";
   const { currentUser, successMessage, errorMessage } = useContext(AuthContext);
-
-  // remove item
-  const queryClient = useQueryClient();
-  const [loading, setLoading] = useState(false);
-
-  // const mutation = useMutation({
-  //   mutationFn: async (exchangeId) => {
-  //     setLoading(true);
-  //     await makeRequest
-  //       .post(
-  //         `/manager/delete-exchange?exchangeId=${exchangeId}`,
-  //         {},
-  //         {
-  //           headers: { Authorization: `Bearer ${currentUser.accessToken}` },
-  //         }
-  //       )
-  //       .then((res) => {
-  //         successMessage("Item deleted.");
-  //         setLoading(false);
-  //       })
-  //       .catch(() => {
-  //         errorMessage("Something went wrong...");
-  //         setLoading(false);
-  //       });
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries({ queryKey: ["exchanges"] });
-  //   },
-  // });
-
-  // const handleRemoveItem = async (exchangeId) => {
-  //   await mutation.mutateAsync(exchangeId);
-  // };
-
-  // const [openPopupDelete, setOpenPopupDelete] = useState(false);
-  const [idItemDelete, setIdItemDelete] = useState("");
 
   // update item
   const [openUpdateItem, setOpenUpdateItem] = useState(false);
@@ -67,6 +31,7 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
 
   const [openDetailItem, setOpenDetailItem] = useState(false);
   const [itemSelected, setItemSelected] = useState({});
+
   return (
     <div class="table-item-box">
       {/* {isLoading && <Loading />} */}
@@ -96,8 +61,10 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
       </div>
 
       {/* table-item rows */}
-      {currentItem?.length <= 0 && isFiltering ? (
-        <p>No exchange match</p>
+      {loading ? (
+        <Loading />
+      ) : currentItem?.length <= 0 && isFiltering ? (
+        <p>No item match</p>
       ) : (
         currentItem?.map((item, index) => (
           <div class="table-item-row" key={index}>
@@ -174,6 +141,7 @@ const TableItem = ({ isFiltering, dataItem, currentItem }) => {
       {dataItem?.length <= 0 ? (
         <p></p>
       ) : (
+        !isFiltering &&
         dataItem?.map((item, index) => (
           <div class="table-item-row" key={index}>
             <div class="table-item-cell first-cell">

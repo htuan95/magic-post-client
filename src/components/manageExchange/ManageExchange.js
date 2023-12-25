@@ -24,7 +24,7 @@ const ManageExchange = () => {
   const openFilterExchange = () => setIsFilterExchange(true);
   // close filter exchange
   const closeFilterExchange = () => setIsFilterExchange(false);
-  
+
   // Handle filters exchange
   const [currentExchange, setCurrentExchange] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
@@ -71,6 +71,7 @@ const ManageExchange = () => {
                 className="manage-exchange-filter"
                 onClick={() => {
                   setIsFiltering(false);
+                  getFilterExchange([]);
                   queryClient.invalidateQueries(["exchanges"]);
                 }}
               >
@@ -101,25 +102,21 @@ const ManageExchange = () => {
       {/* <Pagination /> */}
       {totalPage > 0 && (
         <div class="pagination">
-          <button
-            className="pagination-btn prev-btn"
-            onClick={prevPage}
-          >
+          <button className="pagination-btn prev-btn" onClick={prevPage}>
             Prev
           </button>
           <p className="pagination-current">
             {page + 1} / {totalPage}
           </p>
-          <button
-            className="pagination-btn next-btn"
-            onClick={nextPage}
-          >
+          <button className="pagination-btn next-btn" onClick={nextPage}>
             Next
           </button>
         </div>
       )}
 
-      {isOpenModal && <FormExchangeModal closeFormModal={closeFormModal} item={{}}/>}
+      {isOpenModal && (
+        <FormExchangeModal closeFormModal={closeFormModal} item={{}} />
+      )}
 
       {isFilterExchange && (
         <FilterExchange
