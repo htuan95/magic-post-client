@@ -103,15 +103,17 @@ const TableItem = ({ loading, isFiltering, dataItem, currentItem }) => {
                   Details
                 </button>
               )}
-              <button
-                className="table-item-btn process"
-                onClick={() => {
-                  setListItemProcess(item.itemProcess);
-                  setOpenProcessItem(true);
-                }}
-              >
-                Process
-              </button>
+              {currentUser.role !== "USER_NORMAL" && (
+                <button
+                  className="table-item-btn process"
+                  onClick={() => {
+                    setListItemProcess(item.itemProcess);
+                    setOpenProcessItem(true);
+                  }}
+                >
+                  Process
+                </button>
+              )}
               {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
                 currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
                 currentUser.role !== "MANAGER" &&
@@ -181,15 +183,17 @@ const TableItem = ({ loading, isFiltering, dataItem, currentItem }) => {
               )}
 
               {/* {currentUser.role !== "USER_NORMAL" && ( */}
-              <button
-                className="table-item-btn process"
-                onClick={() => {
-                  setListItemProcess(item.itemProcess);
-                  setOpenProcessItem(true);
-                }}
-              >
-                Process
-              </button>
+              {currentUser.role !== "USER_NORMAL" && (
+                <button
+                  className="table-item-btn process"
+                  onClick={() => {
+                    setListItemProcess(item.itemProcess);
+                    setOpenProcessItem(true);
+                  }}
+                >
+                  Process
+                </button>
+              )}
               {/* )} */}
               {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
                 currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&

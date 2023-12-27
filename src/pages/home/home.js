@@ -41,7 +41,7 @@ const Home = () => {
     queryKey: ["my-role"],
     queryFn: () =>
       makeRequest
-        .get(`/user/get-role-user?userId=${currentUser?.userId}`, {
+        .get(`/user/get-user-info`, {
           headers: { Authorization: `Bearer ${currentUser?.accessToken}` },
         })
         .then((res) => {
@@ -54,7 +54,9 @@ const Home = () => {
     if (error) {
       return errorMessage("Something went wrong");
     } else {
-      currentUser.role = data;
+      currentUser.role = data?.role;
+      currentUser.name = data?.name;
+      currentUser.email = data?.email;
       localStorage.setItem("userData", JSON.stringify(currentUser));
       return (
         <div className={isPage401 ? "home unauthorized" : "home"}>
@@ -66,6 +68,9 @@ const Home = () => {
               setCurrentUser={setCurrentUser}
             />
           )} */}
+          <div className="home-user-info">
+              <p>{currentUser?.name} --- {currentUser?.email}</p>
+          </div>
         </div>
       );
     }

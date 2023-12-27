@@ -108,26 +108,30 @@ const ManageItem = () => {
         <div className="manage-item-header">
           <h2 className="manage-item-title">Items management</h2>
           <div className="manage-item-actions">
-            {isFiltering ? (
-              <button
-                className="manage-item-filter"
-                onClick={() => {
-                  setLoading(true);
-                  setIsFiltering(false);
-                  setCurrentItem([]);
-                  queryClient.invalidateQueries(["items"]);
-                  setLoading(false);
-                }}
-              >
-                Remove Filter
-              </button>
-            ) : (
-              <button
-                className="manage-item-filter"
-                onClick={() => setIsFilterStatus(true)}
-              >
-                Filter status
-              </button>
+            {currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
+              <>
+                {isFiltering ? (
+                  <button
+                    className="manage-item-filter"
+                    onClick={() => {
+                      setLoading(true);
+                      setIsFiltering(false);
+                      setCurrentItem([]);
+                      queryClient.invalidateQueries(["items"]);
+                      setLoading(false);
+                    }}
+                  >
+                    Remove Filter
+                  </button>
+                ) : (
+                  <button
+                    className="manage-item-filter"
+                    onClick={() => setIsFilterStatus(true)}
+                  >
+                    Filter status
+                  </button>
+                )}
+              </>
             )}
             {currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
               <button className="btn-add" onClick={openFormModal}>

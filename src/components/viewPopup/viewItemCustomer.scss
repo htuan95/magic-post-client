@@ -19,6 +19,21 @@
   margin: 0px auto;
   padding: 40px;
   cursor: text;
+  color: black;
+  min-width: 500px;
+  max-height: 600px;
+  overflow-y: scroll;
+  font-size: 17px;
+
+  &::-webkit-scrollbar {
+    width: 2px; /* Độ rộng của thanh cuộn */
+    background-color: rgba(0, 0, 0, 0.2); /* Màu nền của thanh cuộn */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.5); /* Màu của thanh cuộn */
+    border-radius: 4px; /* Độ cong của thanh cuộn */
+  }
 
   .view-popup-customer-title {
     color: black;
@@ -29,11 +44,68 @@
   .view-popup-customer-box {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    // gap: 20px;
 
-    .view-popup-customer-sender {
-      .view-popup-customer-info {
-        color: black;
+    .view-popup-customer-process {
+      display: flex;
+      flex-direction: column;
+
+      .item-process-child {
+        width: 100%;
+        margin-bottom: 10px;
+        display: flex;
+        gap: 30px;
+
+        .item-process-time {
+        }
+
+        .item-process-status-progress {
+          position: relative;
+          border-right: 1px solid gray;
+
+          .item-process-status {
+            position: absolute;
+            left: -11px;
+            top: 0;
+            background-color: lightgray;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            .item-process-icon {
+              color: black;
+            }
+            .item-process-icon.active {
+              font-weight: bold;
+              color: white;
+            }
+          }
+
+          .item-process-status.active {
+            background-color: green;
+          }
+        }
+
+        .item-process-details {
+          .item-process-description {
+            margin-bottom: 10px;
+          }
+
+          .item-process-description.active {
+            font-weight: 600;
+          }
+
+          .item-process-details-desc {
+            margin-bottom: 5px;
+          }
+        }
+      }
+
+      .item-process-child:last-child {
+        min-height: 0;
       }
 
       .view-popup-customer-details {
@@ -62,6 +134,7 @@
           font-size: 17px;
           font-weight: bold;
           padding: 6px 25px 6px 0;
+          text-align: center;
         }
 
         .view-popup-customer-info {
