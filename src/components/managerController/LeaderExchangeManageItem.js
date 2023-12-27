@@ -37,8 +37,6 @@ const LeaderExchangeManageItem = () => {
       ? "EXCHANGE"
       : "GATHERING";
 
-  console.log(itemLocationType);
-
   const { isLoading, data, error } = useQuery({
     queryKey: ["items", page, itemLocationType],
     queryFn: () =>

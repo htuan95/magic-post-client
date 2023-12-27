@@ -7,7 +7,6 @@ import makeRequest from "../../services/makeRequest";
 import { useQuery } from "@tanstack/react-query";
 
 const ViewItemCustomer = ({ closeVisible, item }) => {
-  console.log(item.sendingItemUser.name);
   const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   

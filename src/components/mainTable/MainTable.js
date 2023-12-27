@@ -44,26 +44,26 @@ const MainTable = ({ title }) => {
         }),
   });
 
-  const {
-    isLoading: loadingEmployeeGathering,
-    data: dataEmployeeGathering,
-    error: errorEmployeeGathering,
-  } = useQuery({
-    queryKey: ["gathering-employee", page],
-    queryFn: () =>
-      makeRequest
-        .post(
-          `/listing/get-list-normal-user?page=${page}`,
-          {},
-          {
-            headers: { Authorization: "Bearer " + currentUser.accessToken },
-          }
-        )
-        .then((res) => {
-          setTotalPage(res.data.pagination.totalPage);
-          return res.data.data;
-        }),
-  });
+  // const {
+  //   isLoading: loadingEmployeeGathering,
+  //   data: dataEmployeeGathering,
+  //   error: errorEmployeeGathering,
+  // } = useQuery({
+  //   queryKey: ["gathering-employee", page],
+  //   queryFn: () =>
+  //     makeRequest
+  //       .post(
+  //         `/listing/get-list-normal-user?page=${page}`,
+  //         {},
+  //         {
+  //           headers: { Authorization: "Bearer " + currentUser.accessToken },
+  //         }
+  //       )
+  //       .then((res) => {
+  //         setTotalPage(res.data.pagination.totalPage);
+  //         return res.data.data;
+  //       }),
+  // });
 
   // on change role
   const onChangeRole = (e) => setRole(e.target.value);

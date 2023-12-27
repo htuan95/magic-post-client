@@ -1,14 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
 import makeRequest from "../../../services/makeRequest";
 import { AuthContext } from "../../../context/AuthContext";
-import { GetLeaders } from "../../../services/getReq";
 import { AiOutlineClose } from "react-icons/ai";
 import Loading from "../../loading/loading";
 import { inputConfirmReceivedItem } from "../../../helpers/inputHelpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import "./confirmReceivedItem.scss";
 
-const ConfirmReceivedItem = ({ closeFormModal }) => {
+const ConfirmReceivedItem = ({
+  closeFormModal,
+  setDataItem,
+  setOpenReceipt,
+}) => {
   const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [values, setValues] = useState({
@@ -46,13 +49,16 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
         }
       )
       .then((res) => {
-        successMessage("Confirm item successful");
+        setDataItem(res.data.data);
+        successMessage("Create item successful");
         queryClient.invalidateQueries({ queryKey: ["items"] });
+        setTimeout(() => {
+          setOpenReceipt(true);
+        }, 800);
         setLoading(false);
         closeFormModal();
       })
       .catch((err) => {
-        console.log(err);
         errorMessage("Something went wrong...");
         setLoading(false);
       });
@@ -72,26 +78,28 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
   const [pageUserReceive, setPageUserReceive] = useState(0);
   const [totalPageUserReceive, setTotalPageUserReceive] = useState(0);
 
-  const prevPage = () => {
+  const prevPage = async () => {
     if (openExchange) {
       page > 0 && setPage(page - 1);
     } else if (openUserSend) {
       pageUserSent > 0 && setPageUserSent(pageUserSent - 1);
-      handleFilterUser(pageUserSent);
+      await handleFilterUser(pageUserSent);
     } else if (openUserReceive) {
       pageUserReceive > 0 && setPageUserReceive(pageUserReceive - 1);
-      handleFilterUser(pageUserReceive);
+      await handleFilterUser(pageUserReceive);
     }
   };
 
-  const nextPage = () => {
+  const nextPage = async () => {
     if (openExchange) {
       page + 1 < totalPage && setPage(page + 1);
     } else if (openUserSend) {
       pageUserSent + 1 < totalPageUserSent && setPageUserSent(pageUserSent + 1);
+      await handleFilterUser(pageUserSent);
     } else if (openUserReceive) {
       pageUserReceive + 1 < totalPageUserReceive &&
         setPageUserReceive(pageUserReceive + 1);
+      await handleFilterUser(pageUserReceive);
     }
   };
 
@@ -149,8 +157,6 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
         setLoading(false);
       });
   };
-
-  useEffect(() => {}, []);
 
   // users
   const [userSendId, setUserSendId] = useState("");
@@ -274,7 +280,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                     </div>
                   ))
                 )}
-                {totalPageUserSent > 0 && (
+                {totalPageUserSent > 0 && listUser?.length > 0 && (
                   <div class="pagination confirm-item-p">
                     <button
                       className="pagination-btn prev-btn confirm-item-p"
@@ -367,7 +373,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                     </div>
                   ))
                 )}
-                {totalPageUserReceive > 0 && (
+                {totalPageUserReceive > 0 && listUser?.length > 0 && (
                   <div class="pagination confirm-item-p">
                     <button
                       className="pagination-btn prev-btn confirm-item-p"
@@ -377,7 +383,7 @@ const ConfirmReceivedItem = ({ closeFormModal }) => {
                       Prev
                     </button>
                     <p className="pagination-current confirm-item-p">
-                      {pageUserSent + 1} / {totalPageUserSent}
+                      {pageUserReceive + 1} / {totalPageUserReceive}
                     </p>
                     <button
                       className="pagination-btn next-btn confirm-item-p"

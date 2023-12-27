@@ -5,6 +5,7 @@ import { AuthContext } from "../../context/AuthContext";
 import Loading from "../loading/loading";
 import { AiOutlineClose } from "react-icons/ai";
 import { inputRegister } from "../../helpers/inputHelpers";
+import { useQueryClient } from "@tanstack/react-query";
 
 const FormLeader = ({ closeFormModal }) => {
   const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
@@ -24,6 +25,8 @@ const FormLeader = ({ closeFormModal }) => {
     setValues({ ...values, [e.target.name]: e.target.value });
   };
 
+  const queryClient = useQueryClient();
+
   const handleCreateLeader = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -34,6 +37,7 @@ const FormLeader = ({ closeFormModal }) => {
       })
       .then((res) => {
         setTimeout(() => {
+          queryClient.invalidateQueries(["leaders"]);
           successMessage("Add leader successfully");
           setLoading(false);
           closeFormModal();

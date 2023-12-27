@@ -111,15 +111,46 @@ const ItemProcess = ({ closeFormModal, listItemProcess }) => {
               <div className="item-process-details">
                 <p className="item-process-description">{item.description}</p>
                 <p className="item-process-details-desc">
-                  Address:{" "}
-                  {getLocationItem(item.locationId)?.exchangeAddress ||
-                    getLocationItem(item.locationId)?.gatheringAddress}
+                  {(
+                    getLocationItem(item.locationId)?.exchangeName ||
+                    getLocationItem(item.locationId)?.gatheringName
+                  )?.length > 0 &&
+                    `${
+                      item?.locationType
+                        ?.toLowerCase()
+                        .charAt(0)
+                        .toUpperCase() +
+                      item?.locationType?.toLowerCase()?.slice(1)
+                    } name:    ${
+                      getLocationItem(item.locationId)?.exchangeName ||
+                      getLocationItem(item.locationId)?.gatheringName
+                    }`}
                 </p>
                 <p className="item-process-details-desc">
-                  Name: {getEmployee(item.employeeId)?.name}
+                  {(
+                    getLocationItem(item.locationId)?.exchangeAddress ||
+                    getLocationItem(item.locationId)?.gatheringAddress
+                  )?.length > 0 &&
+                    `${
+                      item?.locationType
+                        ?.toLowerCase()
+                        .charAt(0)
+                        .toUpperCase() +
+                      item?.locationType?.toLowerCase()?.slice(1)
+                    } address:    ${
+                      getLocationItem(item.locationId)?.exchangeAddress ||
+                      getLocationItem(item.locationId)?.gatheringAddress
+                    }`}
                 </p>
                 <p className="item-process-details-desc">
-                  Phone: {getEmployee(item.employeeId)?.phoneNumber}
+                  {getEmployee(item.employeeId)?.name?.length > 0 &&
+                    `Employee name:    ${getEmployee(item.employeeId)?.name}`}
+                </p>
+                <p className="item-process-details-desc">
+                  {getEmployee(item.employeeId)?.phoneNumber?.length > 0 &&
+                    `Employee phone:    ${
+                      getEmployee(item.employeeId)?.phoneNumber
+                    }`}
                 </p>
               </div>
             </div>

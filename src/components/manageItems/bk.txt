@@ -11,13 +11,11 @@ import FormExchangeModal from "../formModal/FormExchangeModal";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import TableItem from "../table/TableItem";
 import ConfirmReceivedItem from "../exchangeController/confirmReceivedItem/ConfirmReceivedItem";
-import FilterItemStatus from "../filterPopup/filterStatus";
-import ViewReceipt from "../viewPopup/ViewReceipt";
 
 const ManageItem = () => {
   const { currentUser, errorMessage, successMessage } = useContext(AuthContext);
   const [isOpenModal, setIsOpenModal] = useState(false);
-  const [isFilterStatus, setIsFilterStatus] = useState(false);
+  const [isFilterExchange, setIsFilterExchange] = useState(false);
 
   // Open modal
   const openFormModal = () => setIsOpenModal(true);
@@ -25,12 +23,11 @@ const ManageItem = () => {
   const closeFormModal = () => setIsOpenModal(false);
 
   // close filter exchange
-  const closeFilterItemStatus = () => setIsFilterStatus(false);
+  const closeFilterItemStatus = () => setIsFilterExchange(false);
 
   // Handle filters exchange
   const [currentItem, setCurrentItem] = useState([]);
   const [isFiltering, setIsFiltering] = useState(false);
-  const getFilterItemStatus = (data) => setCurrentItem(data);
 
   const queryClient = useQueryClient();
 
@@ -44,6 +41,8 @@ const ManageItem = () => {
   const nextPage = () => {
     page + 1 < totalPage && setPage(page + 1);
   };
+
+  const [itemStatus, setItemStatus] = useState("Select item status");
 
   const itemLocationType =
     currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE"
@@ -86,6 +85,7 @@ const ManageItem = () => {
           setTimeout(() => {
             setCurrentItem(res.data.data);
             setTotalPage(res.data.pagination.totalPage);
+            console.log("item status", res.data);
             successMessage("Get items successful");
             setLoading(false);
             closeFilterItemStatus();
@@ -99,36 +99,52 @@ const ManageItem = () => {
     } catch (error) {}
   };
 
-  const [openReceipt, setOpenReceipt] = useState(false);
-  const [dataItem, setDataItem] = useState({});
-
   return (
     <div className="manage-item">
       <div className="manage-item-container">
         <div className="manage-item-header">
           <h2 className="manage-item-title">Items management</h2>
           <div className="manage-item-actions">
-            {isFiltering ? (
-              <button
-                className="manage-item-filter"
-                onClick={() => {
-                  setLoading(true);
-                  setIsFiltering(false);
-                  setCurrentItem([]);
-                  queryClient.invalidateQueries(["items"]);
-                  setLoading(false);
-                }}
-              >
-                Remove Filter
-              </button>
-            ) : (
-              <button
-                className="manage-item-filter"
-                onClick={() => setIsFilterStatus(true)}
-              >
-                Filter status
-              </button>
-            )}
+            {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
+              currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
+              currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" && (
+                <div className="main-table-select-option">
+                  <button
+                    className="main-table-role-option"
+                    value="EXCHANGER_SENT_TO_USER"
+                    onClick={() =>
+                      fetchItemStatus(
+                        "EXCHANGER_SENT_TO_USER",
+                        "USER_RECEIVED_SUCCESSFUL"
+                      )
+                    }
+                  >
+                    EXCHANGER_SENT_TO_USER
+                  </button>
+                  <button
+                    className="main-table-role-option"
+                    value="USER_SENT_TO_EXCHANGE_AGAIN"
+                    onClick={() =>
+                      fetchItemStatus("USER_SENT_TO_EXCHANGE_AGAIN", "EXCHANGE")
+                    }
+                  >
+                    USER_SENT_TO_EXCHANGE_AGAIN
+                  </button>
+                  <button
+                    className="main-table-role-option"
+                    value="USER_SENT_TO_EXCHANGE_AGAIN"
+                    onClick={() => {
+                      setLoading(true);
+                      setIsFiltering(false);
+                      setCurrentItem([]);
+                      queryClient.invalidateQueries(["items"]);
+                      setLoading(false);
+                    }}
+                  >
+                    Remove filter status
+                  </button>
+                </div>
+              )}
             {currentUser.role === "EMPLOYEE_OF_COMMODITY_EXCHANGE" && (
               <button className="btn-add" onClick={openFormModal}>
                 <p>Create new item</p>
@@ -163,29 +179,7 @@ const ManageItem = () => {
 
       {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
         currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
-        isOpenModal && (
-          <ConfirmReceivedItem
-            closeFormModal={closeFormModal}
-            setDataItem={setDataItem}
-            setOpenReceipt={setOpenReceipt}
-          />
-        )}
-
-      {isFilterStatus && (
-        <FilterItemStatus
-          closeFilterItemStatus={closeFilterItemStatus}
-          getFilterItemStatus={getFilterItemStatus}
-          setIsFiltering={setIsFiltering}
-          fetchItemStatus={fetchItemStatus}
-        />
-      )}
-
-      {openReceipt && (
-        <ViewReceipt
-          closeVisible={() => setOpenReceipt(false)}
-          item={dataItem}
-        />
-      )}
+        isOpenModal && <ConfirmReceivedItem closeFormModal={closeFormModal} />}
     </div>
   );
 };

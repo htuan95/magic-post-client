@@ -6,7 +6,7 @@ import Loading from "../../loading/loading";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import "./updateItemProcessInChange.scss";
 
-const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
+const UpdateItemProcessInChange = ({ closeFormModal, item }) => {
   const { successMessage, errorMessage, currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +33,7 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
         "/exchange/update-item-process-in-exchange",
         {
           exchangeId: exchangeId,
-          itemId: itemId,
+          itemId: item?.id,
           gatheringId: gatheringId,
           userReceivedStatus:
             userReceivedStatus !== "NONE" ? userReceivedStatus : "",
@@ -78,7 +78,7 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
         "/gathering/update-item-process-in-gathering",
         {
           exchangeId: exchangeId,
-          itemId: itemId,
+          itemId: item?.id,
           gatheringId: gatheringId,
           userReceivedStatus:
             userReceivedStatus !== "NONE" ? userReceivedStatus : "",
@@ -354,39 +354,43 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
                 placeholder="Item ID"
                 className="update-process-change-input"
                 name="itemId"
-                value={itemId}
+                value={item?.id}
                 onChange={() => {}}
                 required
               />
             </div>
-            {currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" && (
-              <div className="update-process-change-input-controller">
-                <p className="update-process-change-input-label">
-                  User received status:{" "}
-                </p>
+            {currentUser.role !== "EMPLOYEE_OF_COMMODITY_GATHERING" &&
+              item?.itemStatus !== "USER_SENT_TO_EXCHANGE" && (
+                <div className="update-process-change-input-controller">
+                  <p className="update-process-change-input-label">
+                    User received status:{" "}
+                  </p>
 
-                <select
-                  className="update-process-change-select"
-                  onChange={(e) => setUserReceivedStatus(e.target.value)}
-                  name="userReceivedStatus"
-                >
-                  <option className="update-process-change-option" value="NONE">
-                    NONE
-                  </option>
-                  <option
-                    className="update-process-change-option"
-                    value="USER_RECEIVED_FAILED"
+                  <select
+                    className="update-process-change-select"
+                    onChange={(e) => setUserReceivedStatus(e.target.value)}
+                    name="userReceivedStatus"
                   >
-                    USER_RECEIVED_FAILED
-                  </option>
-                  <option
-                    className="update-process-change-option"
-                    value="USER_RECEIVED_SUCCESSFUL"
-                  >
-                    USER_RECEIVED_SUCCESSFUL
-                  </option>
-                </select>
-                {/* <input
+                    <option
+                      className="update-process-change-option"
+                      value="NONE"
+                    >
+                      NONE
+                    </option>
+                    <option
+                      className="update-process-change-option"
+                      value="USER_RECEIVED_FAILED"
+                    >
+                      USER_RECEIVED_FAILED
+                    </option>
+                    <option
+                      className="update-process-change-option"
+                      value="USER_RECEIVED_SUCCESSFUL"
+                    >
+                      USER_RECEIVED_SUCCESSFUL
+                    </option>
+                  </select>
+                  {/* <input
                 type="text"
                 placeholder="User received status"
                 className="update-process-change-input"
@@ -394,8 +398,8 @@ const UpdateItemProcessInChange = ({ closeFormModal, itemId }) => {
                 value={userReceivedStatus}
                 required
               /> */}
-              </div>
-            )}
+                </div>
+              )}
           </div>
 
           <button className="update-process-change-btn" type="submit">

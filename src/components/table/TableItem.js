@@ -115,12 +115,14 @@ const TableItem = ({ loading, isFiltering, dataItem, currentItem }) => {
               {currentUser.role !== "LEADER_OF_COMMODITY_EXCHANGE" &&
                 currentUser.role !== "LEADER_OF_COMMODITY_GATHERING" &&
                 currentUser.role !== "MANAGER" &&
-                currentUser.role !== "USER_NORMAL" && (
+                currentUser.role !== "USER_NORMAL" &&
+                item.itemStatus !== "EXCHANGER_SENT_TO_USER" && (
                   <button
                     className="table-item-btn update"
                     onClick={() => {
                       setOpenUpdateItem(true);
-                      setItemId(item.id);
+                      // setItemId(item.id);
+                      setItemSelected(item);
                     }}
                   >
                     Update
@@ -197,7 +199,8 @@ const TableItem = ({ loading, isFiltering, dataItem, currentItem }) => {
                     className="table-item-btn update"
                     onClick={() => {
                       setOpenUpdateItem(true);
-                      setItemId(item.id);
+                      // setItemId(item.id);
+                      setItemSelected(item);
                     }}
                   >
                     Update
@@ -219,7 +222,7 @@ const TableItem = ({ loading, isFiltering, dataItem, currentItem }) => {
       {openUpdateItem && (
         <UpdateItemProcessInChange
           closeFormModal={closeUpdateItem}
-          itemId={itemId}
+          item={itemSelected}
         />
       )}
 

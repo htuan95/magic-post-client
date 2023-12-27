@@ -62,7 +62,6 @@ const CustomerManageItem = () => {
           }
         )
         .then((res) => {
-          console.log(res.data);
           setTotalPage(res.data.pagination.totalPage);
           return res.data.data;
         }),

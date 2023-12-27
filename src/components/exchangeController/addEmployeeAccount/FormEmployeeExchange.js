@@ -56,7 +56,6 @@ const FormEmployee = ({ closeFormModal, role }) => {
         }, 1000);
       })
       .catch((err) => {
-        console.log(err);
         errorMessage("Something went wrong...");
         setLoading(false);
       });

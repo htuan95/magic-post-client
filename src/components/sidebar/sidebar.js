@@ -6,7 +6,6 @@ import { handleOpenOptions } from "../../helpers";
 import { AuthContext } from "../../context/AuthContext";
 
 const Sidebar = ({ selectedMenu, onChangeMenu }) => {
-  console.log("selectedMenu", selectedMenu);
   const navigate = useNavigate();
   const [openPopup, setOpenPopup] = useState(false);
   const [loading, setLoading] = useState(false);
